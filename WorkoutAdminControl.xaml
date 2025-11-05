@@ -1,0 +1,31 @@
+﻿<Window x:Class="PROJECT.WorkoutAdminControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PROJECT"
+        mc:Ignorable="d"
+        Title="Админ панель" Height="450" Width="800" >
+    <!--Чтобы не добавлять по отдельности -->
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <Style x:Key="TextStyle_TextBlock" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Button Content="➕ Создать упражнение" Click="CreateExercise_Click" Margin="10" Style="{StaticResource ButtonStyle}"/>
+
+        <ScrollViewer Grid.Row="1">
+            <StackPanel x:Name="ExercisesPanel" Margin="10"/>
+        </ScrollViewer>
+
+    </Grid>
+</Window>

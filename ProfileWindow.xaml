@@ -1,0 +1,77 @@
+﻿<Window x:Class="PROJECT.ProfileWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PROJECT"
+        mc:Ignorable="d"
+        Title="ProfileWindow" Height="450" Width="800">
+    <!--Чтобы не добавлять по отдельности -->
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <Style x:Key="TextStyle_TextBlock" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+    </Window.Resources>
+    <ScrollViewer>
+        <StackPanel Margin="20">
+            <TextBlock Text="Логин (нельзя изменить):" FontWeight="Bold"/>
+            <TextBox x:Name="UsernameBox" IsEnabled="False" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Возраст:" FontWeight="Bold"/>
+            <TextBox x:Name="AgeBox" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Пол:" FontWeight="Bold"/>
+            <ComboBox x:Name="GenderBox" Margin="0,0,0,10">
+                <ComboBoxItem Content="Мужской"/>
+                <ComboBoxItem Content="Женский"/>
+            </ComboBox>
+
+            <TextBlock Text="Рост (см):" FontWeight="Bold"/>
+            <TextBox x:Name="HeightBox" Margin="0,0,0,20"/>
+
+            <TextBlock Text="Уровень подготовки:" FontWeight="Bold"/>
+            <ComboBox x:Name="FitnessLevelBox" Margin="0,0,0,10">
+                <ComboBoxItem Content="Новичок"/>
+                <ComboBoxItem Content="Средний"/>
+                <ComboBoxItem Content="Продвинутый"/>
+            </ComboBox>
+
+            <TextBlock Text="Цель:" FontWeight="Bold"/>
+            <ComboBox x:Name="GoalBox" Margin="0,0,0,20">
+                <ComboBoxItem Content="Набор массы"/>
+                <ComboBoxItem Content="Сушка"/>
+                <ComboBoxItem Content="Выносливость"/>
+            </ComboBox>
+
+            <TextBlock Text="Доступное оборудование:" FontWeight="Bold"/>
+            <ListBox x:Name="EquipmentBox" SelectionMode="Multiple" Height="80" Margin="0,0,0,20">
+                <ListBoxItem Content="Гантели"/>
+                <ListBoxItem Content="Штанга"/>
+                <ListBoxItem Content="Тренажёры"/>
+                <ListBoxItem Content="Вес тела"/>
+            </ListBox>
+
+            <TextBlock Text="Тренировок в неделю:" FontWeight="Bold"/>
+            <ComboBox x:Name="WorkoutsPerWeekBox" Margin="0,0,0,10">
+                <ComboBoxItem Content="2"/>
+                <ComboBoxItem Content="3"/>
+                <ComboBoxItem Content="4"/>
+                <ComboBoxItem Content="5"/>
+            </ComboBox>
+
+            <TextBlock Text="Длительность тренировки (мин):" FontWeight="Bold"/>
+            <ComboBox x:Name="DurationBox" Margin="0,0,0,20">
+                <ComboBoxItem Content="30"/>
+                <ComboBoxItem Content="45"/>
+                <ComboBoxItem Content="60"/>
+                <ComboBoxItem Content="75"/>
+                <ComboBoxItem Content="90"/>
+            </ComboBox>
+
+            <Button Content="Сохранить" Width="100" Height="30" HorizontalAlignment="Right" Click="Save_Click" Style="{StaticResource ButtonStyle}"/>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

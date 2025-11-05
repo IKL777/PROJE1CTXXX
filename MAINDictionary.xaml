@@ -1,0 +1,97 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Brush x:Key="Main_Color">#4361ee</Brush>
+    <Brush x:Key="backgroundd">#FFFFFF</Brush>
+    <Brush x:Key="textcolor">#1e293b</Brush>
+    <Brush x:Key="textcolor2">#64748b</Brush>
+    <Brush x:Key="akcent_access_color">#4ade80</Brush>
+    <Brush x:Key="akcent_access_color2">#1C5430</Brush>
+    
+
+
+
+    <Style x:Key="ButtonStyle" TargetType="Button">
+        <!-- Обычное состояние -->
+        <Setter Property="Background" Value="{StaticResource Main_Color}" />
+        <Setter Property="Foreground" Value="{StaticResource backgroundd}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Padding" Value="12,6" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border 
+                    x:Name="border"
+                    Background="{TemplateBinding Background}"
+                    Padding="{TemplateBinding Padding}">
+                        <ContentPresenter 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center"
+                        RecognizesAccessKey="True" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <!-- Триггеры для изменения при наведении -->
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource akcent_access_color}" />
+                <!-- или ваш ресурс -->
+                <Setter Property="Foreground" Value="{StaticResource textcolor}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource akcent_access_color2}" />
+                <Setter Property="Foreground" Value="white" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="TextStyle_TextBlock" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
+
+    <Style x:Key="LabelStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Padding" Value="12,6"/>
+       
+    </Style>
+
+    <Style x:Key="Delete_ButtonStyle" TargetType="Button">
+        <!-- Обычное состояние -->
+        <Setter Property="Background" Value="{StaticResource backgroundd}" />
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Padding" Value="12,6" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border 
+                 x:Name="border"
+                 Background="{TemplateBinding Background}"
+                 Padding="{TemplateBinding Padding}">
+                        <ContentPresenter 
+                     HorizontalAlignment="Center" 
+                     VerticalAlignment="Center"
+                     RecognizesAccessKey="True" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <!-- Триггеры для изменения при наведении -->
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="Red" />
+                <Setter Property="Foreground" Value="White" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource Main_Color}" />
+                <Setter Property="Foreground" Value="white" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>
