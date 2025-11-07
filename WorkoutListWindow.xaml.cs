@@ -17,8 +17,9 @@ namespace PROJECT
             WorkoutList.ItemsSource = Workouts;
         }
 
-        private void AddWorkout_Click(object sender, RoutedEventArgs e)
+        private async void AddWorkout_Click(object sender, RoutedEventArgs e)
         {
+
             var inputWindow = new WorkoutInputWindow1();
             if (inputWindow.ShowDialog() == true)
             {
@@ -26,9 +27,22 @@ namespace PROJECT
                 {
                     Date = inputWindow.SelectedDate,
                     Type = inputWindow.SelectedWorkoutType,
-                    Exercises = inputWindow.Exercises
+                    Exercises = inputWindow.Exercises.ToList() // ← ObservableCollection → List
                 };
-                Workouts.Add(newWorkout);
+
+                try
+                {
+                    using var context = new AppDbContext();
+                    context.Database.EnsureCreated();
+                    context.Workouts.Add(newWorkout);
+                    await context.SaveChangesAsync();
+
+                    Workouts.Add(newWorkout); // Для отображения в списке
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка сохранения тренировки: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 

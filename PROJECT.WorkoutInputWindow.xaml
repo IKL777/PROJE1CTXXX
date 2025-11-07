@@ -105,17 +105,17 @@
 
                                             <!-- Подходов -->
                                             <TextBlock Text="Подходов: " Grid.Column="0" VerticalAlignment="Center"/>
-                                            <TextBox Text="{Binding Sets, UpdateSourceTrigger=PropertyChanged}" 
+                                            <TextBox Text="{Binding Sets, UpdateSourceTrigger=PropertyChanged,Converter={StaticResource StringToIntConverter}}" 
                                              Grid.Column="1" Margin="5,0,10,0" VerticalAlignment="Center"/>
 
                                             <!-- Повторений -->
                                             <TextBlock Text="Повторений: " Grid.Column="2" VerticalAlignment="Center"/>
-                                            <TextBox Text="{Binding Reps, UpdateSourceTrigger=PropertyChanged}" 
+                                            <TextBox Text="{Binding Reps, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToIntConverter}}" 
                                              Grid.Column="3" Margin="5,0,10,0" VerticalAlignment="Center"/>
 
                                             <!-- Вес -->
                                             <TextBlock Text="Вес (кг): " Grid.Column="4" VerticalAlignment="Center"/>
-                                            <TextBox Text="{Binding Weight, UpdateSourceTrigger=PropertyChanged}" 
+                                            <TextBox Text="{Binding Weight, UpdateSourceTrigger=PropertyChanged,Converter={StaticResource StringToIntConverter}}" 
                                              Grid.Column="5" Margin="5,0,0,0" VerticalAlignment="Center"/>
 
                                             <!-- Кнопка -->

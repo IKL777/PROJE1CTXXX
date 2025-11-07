@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,7 +17,8 @@ namespace PROJECT
         public WorkoutType SelectedWorkoutType { get; private set; }
         public ObservableCollection<Exercise> Exercises { get; private set; } = new();
 
-        public ObservableCollection<ExerciseCard> AvailableExercises { get; } = new();
+        // Только для отображения, не сохраняется в БД
+        public ObservableCollection<Exercise> AvailableExercises { get; } = new();
         public ObservableCollection<Exercise> SelectedExercises { get; } = new();
 
         public WorkoutInputWindow1()
@@ -23,12 +26,30 @@ namespace PROJECT
             InitializeComponent();
             DataContext = this;
 
-            foreach (var card in ExerciseRepository.AllExercises)
-            {
-                AvailableExercises.Add(card);
-            }
+            LoadAvailableExercises();
 
             DatePicker.SelectedDate = DateTime.Now;
+        }
+
+        private async void LoadAvailableExercises()
+        {
+            try
+            {
+                using var context = new AppDbContext();
+                context.Database.EnsureCreated();
+
+                var exercises = await context.Exercises.ToListAsync();
+
+                AvailableExercises.Clear();
+                foreach (var exercise in exercises)
+                {
+                    AvailableExercises.Add(exercise);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки упражнений: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         // Перетаскивание ИЗ списка "все упражнения"
@@ -37,18 +58,19 @@ namespace PROJECT
             var originalSource = e.OriginalSource as DependencyObject;
             var listBoxItem = FindAncestor<ListBoxItem>(originalSource);
 
-            if (listBoxItem?.DataContext is ExerciseCard card)
+            if (listBoxItem?.DataContext is Exercise exercise)
             {
-                var exercise = new Exercise
+                // Клонируем, чтобы можно было добавить несколько раз с разными параметрами
+                var clonedExercise = new Exercise
                 {
-                    Name = card.Name,
-                    Sets = card.Sets,
-                    Reps = card.Reps,
-                    Weight = card.Weight,
-                    DifficultyLevel = Difficulty.Medium
+                    Name = exercise.Name,
+                    Description = exercise.Description,
+                    Sets = exercise.Sets,
+                    Reps = exercise.Reps,
+                    Weight = exercise.Weight,
                 };
 
-                DragDrop.DoDragDrop(listBoxItem, exercise, DragDropEffects.Copy);
+                DragDrop.DoDragDrop(listBoxItem, clonedExercise, DragDropEffects.Copy);
                 e.Handled = true;
             }
         }
@@ -69,7 +91,8 @@ namespace PROJECT
         {
             if (e.Data.GetData(typeof(Exercise)) is Exercise exercise)
             {
-                if (!SelectedExercises.Any(ex => ex.Name == exercise.Name))
+                // Проверяем, нет ли уже такого упражнения с **такими же параметрами**
+                if (!SelectedExercises.Any(ex => ex.Name == exercise.Name && ex.Sets == exercise.Sets && ex.Reps == exercise.Reps && ex.Weight == exercise.Weight))
                 {
                     SelectedExercises.Add(exercise);
                 }

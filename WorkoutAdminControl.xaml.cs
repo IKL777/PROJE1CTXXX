@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Class1;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Class1;
 
 namespace PROJECT
 {
-    /// <summary>
-    /// Логика взаимодействия для WorkoutAdminControl.xaml
-    /// </summary>
     public partial class WorkoutAdminControl : Window
     {
         public WorkoutAdminControl()
@@ -26,17 +18,29 @@ namespace PROJECT
             LoadExercises();
         }
 
-        private void LoadExercises()
+        private async void LoadExercises()
         {
-            ExercisesPanel.Children.Clear();
-            foreach (var exercise in ExerciseRepository.AllExercises)
+            try
             {
-                var card = CreateExerciseCardUI(exercise);
-                ExercisesPanel.Children.Add(card);
+                using var context = new AppDbContext();
+                context.Database.EnsureCreated();
+
+                var exercises = await context.Exercises.ToListAsync();
+
+                ExercisesPanel.Children.Clear();
+                foreach (var exercise in exercises)
+                {
+                    var card = CreateExerciseCardUI(exercise);
+                    ExercisesPanel.Children.Add(card);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки упражнений: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private UIElement CreateExerciseCardUI(ExerciseCard exercise)
+        private UIElement CreateExerciseCardUI(Exercise exercise)
         {
             var border = new Border
             {
@@ -49,21 +53,19 @@ namespace PROJECT
 
             var stack = new StackPanel();
 
-            // === ЗАХВАТНАЯ ЗОНА ДЛЯ DRAG & DROP ===
             var dragHandle = new TextBlock
             {
                 Text = "🏋️ " + exercise.Name,
                 FontWeight = FontWeights.Bold,
-                Background = Brushes.Transparent, // важно для hit-testing
+                Background = Brushes.Transparent,
                 Cursor = Cursors.SizeAll
             };
 
-            // Только по этому элементу можно тащить
             dragHandle.PreviewMouseLeftButtonDown += (s, e) =>
             {
-                var data = new DataObject("ExerciseCard", exercise);
+                var data = new DataObject("Exercise", exercise);
                 DragDrop.DoDragDrop(dragHandle, data, DragDropEffects.Copy);
-                e.Handled = true; // необязательно, но чисто
+                e.Handled = true;
             };
 
             stack.Children.Add(dragHandle);
@@ -72,7 +74,6 @@ namespace PROJECT
             stack.Children.Add(new TextBlock { Text = $"Подходов: {exercise.Sets}" });
             stack.Children.Add(new TextBlock { Text = $"Вес: {exercise.Weight}" });
 
-            // === КНОПКИ ===
             var buttonPanel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 10, 0, 0) };
 
             var editButton = new Button
@@ -83,7 +84,7 @@ namespace PROJECT
                 Background = Brushes.Transparent
             };
             editButton.Click += EditExercise_Click;
-                        // ыквф
+
             var deleteButton = new Button
             {
                 Content = "🗑️ Удалить",
@@ -100,60 +101,81 @@ namespace PROJECT
             return border;
         }
 
-        private void CreateExercise_Click(object sender, RoutedEventArgs e)
+        private async void CreateExercise_Click(object sender, RoutedEventArgs e)
         {
-            // Простой пример: жёстко зададим упражнение
-            var dialog = new CreateExerciseDialog(); 
+            var dialog = new CreateExerciseDialog();
             dialog.Owner = this;
 
             bool? result = dialog.ShowDialog();
 
             if (result == true && dialog.CreatedExercise != null)
             {
-                ExerciseRepository.AllExercises.Add(dialog.CreatedExercise);
-                LoadExercises(); // ← Вот он! Обновляет UI после добавления
+                var newExercise = dialog.CreatedExercise;
+
+                try
+                {
+                    using var context = new AppDbContext();
+                    context.Exercises.Add(newExercise);
+                    await context.SaveChangesAsync();
+
+                    LoadExercises(); // Обновляем UI
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка сохранения упражнения: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
-        private void EditExercise_Click(object sender, RoutedEventArgs e)
+
+        private async void EditExercise_Click(object sender, RoutedEventArgs e)
         {
-            
             var button = sender as Button;
-            var exercise = button?.Tag as ExerciseCard;
+            var exercise = button?.Tag as Exercise;
 
             if (exercise == null) return;
 
-            // Создаём диалог и заполняем его текущими данными
             var dialog = new CreateExerciseDialog
             {
                 Owner = this
             };
 
-            // Заполняем поля
+            // Заполняем поля текущими значениями
             dialog.NameBox.Text = exercise.Name;
             dialog.DescriptionBox.Text = exercise.Description;
-            dialog.RepsBox.Text = exercise.Reps.ToString();
             dialog.SetsBox.Text = exercise.Sets.ToString();
+            dialog.RepsBox.Text = exercise.Reps.ToString();
             dialog.WeightBox.Text = exercise.Weight.ToString();
 
             bool? result = dialog.ShowDialog();
 
             if (result == true && dialog.CreatedExercise != null)
             {
-                // Обновляем существующий объект (чтобы не нарушать ссылки, если они где-то используются)
+                // Обновляем данные в БД
                 exercise.Name = dialog.CreatedExercise.Name;
                 exercise.Description = dialog.CreatedExercise.Description;
-                exercise.Reps = dialog.CreatedExercise.Reps;
                 exercise.Sets = dialog.CreatedExercise.Sets;
+                exercise.Reps = dialog.CreatedExercise.Reps;
                 exercise.Weight = dialog.CreatedExercise.Weight;
 
-                LoadExercises(); // Перезагружаем UI
+                try
+                {
+                    using var context = new AppDbContext();
+                    context.Exercises.Update(exercise);
+                    await context.SaveChangesAsync();
+
+                    LoadExercises(); // Обновляем UI
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка обновления упражнения: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
-        private void DeleteExercise_Click(object sender, RoutedEventArgs e)
+        private async void DeleteExercise_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
-            var exercise = button?.Tag as ExerciseCard;
+            var exercise = button?.Tag as Exercise;
 
             if (exercise == null) return;
 
@@ -166,8 +188,18 @@ namespace PROJECT
 
             if (result == MessageBoxResult.Yes)
             {
-                ExerciseRepository.AllExercises.Remove(exercise);
-                LoadExercises(); // Обновляем список
+                try
+                {
+                    using var context = new AppDbContext();
+                    context.Exercises.Remove(exercise);
+                    await context.SaveChangesAsync();
+
+                    LoadExercises(); // Обновляем UI
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка удаления упражнения: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

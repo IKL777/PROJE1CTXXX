@@ -5,6 +5,5 @@
              Startup="Application_Startup">
     <Application.Resources>
         <ResourceDictionary Source="maindictionary.xaml"/>
-        
     </Application.Resources>
 </Application>
