@@ -132,8 +132,10 @@ namespace Class1
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Workout>()
+               .OwnsMany(w => w.Exercises);
         }
-       
+        
     }
     public class StringToIntConverter : IValueConverter
     {

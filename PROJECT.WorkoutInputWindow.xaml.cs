@@ -102,7 +102,7 @@ namespace PROJECT
         }
 
         // Кнопка "Создать тренировку"
-        private void AddButton_Click1(object sender, RoutedEventArgs e)
+        private async void AddButton_Click1(object sender, RoutedEventArgs e)
         {
             if (SelectedExercises.Count == 0)
             {
@@ -120,9 +120,29 @@ namespace PROJECT
                 _ => WorkoutType.WithWeights
             };
 
-            Exercises = new ObservableCollection<Exercise>(SelectedExercises);
-            DialogResult = true;
-            Close();
+            var newWorkout = new Workout
+            {
+                Date = SelectedDate,
+                Type = SelectedWorkoutType,
+                Exercises = SelectedExercises.ToList() // ← Теперь это работает!
+            };
+
+            try
+            {
+                using var context = new AppDbContext();
+                context.Database.EnsureCreated();
+
+                context.Workouts.Add(newWorkout);
+                await context.SaveChangesAsync(); // ← Сохраняем
+
+                Exercises = new ObservableCollection<Exercise>(SelectedExercises); // Для UI
+                DialogResult = true;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка сохранения тренировки: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         // Обязательно для DragOver
