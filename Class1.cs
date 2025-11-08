@@ -45,6 +45,7 @@ namespace Class1
         public int Sets { get; set; }
         public int Reps { get; set; }
         public double Weight { get; set; }
+        
 
         public string DisplayText => $"{Name} - {Sets}x{Reps} @ {Weight}kg";
     }
@@ -79,6 +80,7 @@ namespace Class1
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public List<Exercise> Exercises { get; set; } = new(); // ← теперь Exercise, а не ExerciseCard
+        
     }
 
     public static class ProgramRepository

@@ -50,8 +50,11 @@ namespace PROJECT
                 {
                     // Ищем это упражнение в предыдущих тренировках
                     var previousExercise = previousWorkouts
-                        .SelectMany(w => w.Exercises)
-                        .FirstOrDefault(e => e.Name == exercise.Name);
+                    .SelectMany(w => w.Exercises.Select(e => new { Exercise = e, WorkoutDate = w.Date }))
+                    .Where(x => x.Exercise.Id == exercise.Id)
+                    .OrderByDescending(x => x.WorkoutDate)
+                    .Select(x => x.Exercise)
+                    .FirstOrDefault();
 
                     if (previousExercise != null)
                     {

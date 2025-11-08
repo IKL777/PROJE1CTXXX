@@ -60,17 +60,8 @@ namespace PROJECT
 
             if (listBoxItem?.DataContext is Exercise exercise)
             {
-                // Клонируем, чтобы можно было добавить несколько раз с разными параметрами
-                var clonedExercise = new Exercise
-                {
-                    Name = exercise.Name,
-                    Description = exercise.Description,
-                    Sets = exercise.Sets,
-                    Reps = exercise.Reps,
-                    Weight = exercise.Weight,
-                };
 
-                DragDrop.DoDragDrop(listBoxItem, clonedExercise, DragDropEffects.Copy);
+                DragDrop.DoDragDrop(listBoxItem, exercise, DragDropEffects.Copy);
                 e.Handled = true;
             }
         }
