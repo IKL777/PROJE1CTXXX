@@ -52,11 +52,11 @@ namespace PROJECT
 
                 foreach (var exercise in CurrentWorkout.Exercises)
                 {
+                    // Ищем по НАЗВАНИЮ упражнения, а не по ID
                     var previousExercise = previousWorkouts
-                        .SelectMany(w => w.Exercises.Select(e => new { Exercise = e, WorkoutDate = w.Date }))
-                        .Where(x => x.Exercise.Id == exercise.Id)
-                        .OrderByDescending(x => x.WorkoutDate)
-                        .Select(x => x.Exercise)
+                        .SelectMany(w => w.Exercises)
+                        .Where(e => e.Name == exercise.Name)
+                        .OrderByDescending(e => e.Workout.Date)
                         .FirstOrDefault();
 
                     if (previousExercise != null)

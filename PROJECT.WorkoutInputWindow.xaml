@@ -119,7 +119,7 @@
                                              Grid.Column="5" Margin="5,0,0,0" VerticalAlignment="Center"/>
 
                                             <!-- Кнопка -->
-                                            <Button Content="🗑️" Grid.Column="6" Width="50" Height="20" Margin="0,0,0,0"
+                                            <Button Content="🗑️" Grid.Column="6" Width="50" Height="20" Margin="5,0,0,0"
                                             Click="RemoveSelectedExercise_Click" 
                                             Style="{StaticResource Delete_ButtonStyle}"
                                             VerticalAlignment="Center"/>

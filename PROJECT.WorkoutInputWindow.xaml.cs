@@ -16,8 +16,6 @@ namespace PROJECT
         public DateTime SelectedDate { get; private set; }
         public WorkoutType SelectedWorkoutType { get; private set; }
         public ObservableCollection<Exercise> Exercises { get; private set; } = new();
-
-        // Только для отображения, не сохраняется в БД
         public ObservableCollection<Exercise> AvailableExercises { get; } = new();
         public ObservableCollection<Exercise> SelectedExercises { get; } = new();
 
@@ -25,9 +23,7 @@ namespace PROJECT
         {
             InitializeComponent();
             DataContext = this;
-
             LoadAvailableExercises();
-
             DatePicker.SelectedDate = DateTime.Now;
         }
 
@@ -37,9 +33,7 @@ namespace PROJECT
             {
                 using var context = new AppDbContext();
                 context.Database.EnsureCreated();
-
                 var exercises = await context.Exercises.ToListAsync();
-
                 AvailableExercises.Clear();
                 foreach (var exercise in exercises)
                 {
@@ -52,7 +46,6 @@ namespace PROJECT
             }
         }
 
-        // Перетаскивание ИЗ списка "все упражнения"
         private void AvailableExercise_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             var originalSource = e.OriginalSource as DependencyObject;
@@ -60,7 +53,6 @@ namespace PROJECT
 
             if (listBoxItem?.DataContext is Exercise exercise)
             {
-
                 DragDrop.DoDragDrop(listBoxItem, exercise, DragDropEffects.Copy);
                 e.Handled = true;
             }
@@ -77,12 +69,10 @@ namespace PROJECT
             return null;
         }
 
-        // Перетаскивание В список "выбранные"
         private void SelectedList_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetData(typeof(Exercise)) is Exercise exercise)
             {
-                // Проверяем, нет ли уже такого упражнения с **такими же параметрами**
                 if (!SelectedExercises.Any(ex => ex.Name == exercise.Name && ex.Sets == exercise.Sets && ex.Reps == exercise.Reps && ex.Weight == exercise.Weight))
                 {
                     SelectedExercises.Add(exercise);
@@ -90,7 +80,6 @@ namespace PROJECT
             }
         }
 
-        // Удаление упражнения из выбранных
         private void RemoveSelectedExercise_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as FrameworkElement;
@@ -101,7 +90,7 @@ namespace PROJECT
             }
         }
 
-        // Кнопка "Создать тренировку"
+
         private async void AddButton_Click1(object sender, RoutedEventArgs e)
         {
             if (SelectedExercises.Count == 0)
@@ -120,22 +109,49 @@ namespace PROJECT
                 _ => WorkoutType.WithWeights
             };
 
-            var newWorkout = new Workout
-            {
-                Date = SelectedDate,
-                Type = SelectedWorkoutType,
-                Exercises = SelectedExercises.ToList() // ← Теперь это работает!
-            };
-
             try
             {
                 using var context = new AppDbContext();
-                context.Database.EnsureCreated();
 
+                // 1. Создаём тренировку
+                var newWorkout = new Workout
+                {
+                    Date = SelectedDate,
+                    Type = SelectedWorkoutType,
+                    Exercises = new List<Exercise>() // пустой список
+                };
+
+                // 2. Добавляем тренировку в контекст
                 context.Workouts.Add(newWorkout);
-                await context.SaveChangesAsync(); // ← Сохраняем
 
-                Exercises = new ObservableCollection<Exercise>(SelectedExercises); // Для UI
+                // 3. СОХРАНЯЕМ, чтобы получить Id тренировки
+                await context.SaveChangesAsync();
+
+                // 4. Создаём клонированные упражнения СО СВЯЗЬЮ
+                foreach (var ex in SelectedExercises)
+                {
+                    var clonedExercise = new Exercise
+                    {
+                        Name = ex.Name,
+                        Description = ex.Description,
+                        Sets = ex.Sets,
+                        Reps = ex.Reps,
+                        Weight = ex.Weight,
+                        WorkoutId = newWorkout.Id, // ← Устанавливаем связь по внешнему ключу
+                        Workout = newWorkout       // ← Устанавливаем навигационную связь
+                    };
+
+                    // 5. Добавляем упражнение в контекст
+                    context.Exercises.Add(clonedExercise);
+
+                    // 6. Добавляем в коллекцию тренировки
+                    newWorkout.Exercises.Add(clonedExercise);
+                }
+
+                // 7. Сохраняем упражнения
+                await context.SaveChangesAsync();
+
+                Exercises = new ObservableCollection<Exercise>(newWorkout.Exercises);
                 DialogResult = true;
                 Close();
             }
@@ -145,7 +161,6 @@ namespace PROJECT
             }
         }
 
-        // Обязательно для DragOver
         private void SelectedList_DragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(typeof(Exercise)))

@@ -15,11 +15,10 @@ namespace Class1
 
     public class Workout
     {
-        public int Id { get; set; } // Изменил на Id — для EF Core
+        public int Id { get; set; }
         public DateTime Date { get; set; }
         public Class1.WorkoutType Type { get; set; }
 
-        // EF Core не поддерживает ObservableCollection напрямую — используем List
         public List<Exercise> Exercises { get; set; } = new();
 
         public string DisplayText
@@ -36,16 +35,14 @@ namespace Class1
     public class Exercise
     {
         public int Id { get; set; }
-
-        [Required]
         public string Name { get; set; } = string.Empty;
-
         public string Description { get; set; } = string.Empty;
-
         public int Sets { get; set; }
         public int Reps { get; set; }
         public double Weight { get; set; }
-        
+
+        public int? WorkoutId { get; set; }
+        public Workout? Workout { get; set; } // ← ДОБАВЛЕНО НАВИГАЦИОННОЕ СВОЙСТВО
 
         public string DisplayText => $"{Name} - {Sets}x{Reps} @ {Weight}kg";
     }
@@ -79,8 +76,7 @@ namespace Class1
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public List<Exercise> Exercises { get; set; } = new(); // ← теперь Exercise, а не ExerciseCard
-        
+        public List<Exercise> Exercises { get; set; } = new();
     }
 
     public static class ProgramRepository
@@ -120,9 +116,9 @@ namespace Class1
 
     public class AppDbContext : DbContext
     {
-        public DbSet<Workout> Workouts { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<Exercise> Exercises { get; set; }
+        public DbSet<Workout> Workouts { get; set; } = null!;
+        public DbSet<User> Users { get; set; } = null!;
+        public DbSet<Exercise> Exercises { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -132,11 +128,14 @@ namespace Class1
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Workout>()
-               .OwnsMany(w => w.Exercises);
+                .HasMany(w => w.Exercises)
+                .WithOne(e => e.Workout)
+                .HasForeignKey(e => e.WorkoutId);
         }
-        
     }
+
     public class StringToIntConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -150,7 +149,7 @@ namespace Class1
         {
             if (value is string strValue && int.TryParse(strValue, out int result))
                 return result;
-            return 0; // возвращаем 0, если строка пустая или не число
+            return 0;
         }
     }
 }
