@@ -129,10 +129,19 @@ namespace Class1
         {
             base.OnModelCreating(modelBuilder);
 
+            // Явно настраиваем отношения с каскадным удалением
             modelBuilder.Entity<Workout>()
                 .HasMany(w => w.Exercises)
                 .WithOne(e => e.Workout)
-                .HasForeignKey(e => e.WorkoutId);
+                .HasForeignKey(e => e.WorkoutId)
+                .OnDelete(DeleteBehavior.Cascade); // ← Каскадное удаление при удалении тренировки
+
+            // Указываем, что упражнение может существовать без тренировки
+            modelBuilder.Entity<Exercise>()
+                .HasOne(e => e.Workout)
+                .WithMany(w => w.Exercises)
+                .HasForeignKey(e => e.WorkoutId)
+                .IsRequired(false); // ← Внешний ключ необязательный
         }
     }
 

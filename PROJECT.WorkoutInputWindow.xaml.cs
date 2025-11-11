@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Class1;
+using System.Diagnostics;
 
 namespace PROJECT
 {
@@ -113,7 +114,6 @@ namespace PROJECT
             {
                 using var context = new AppDbContext();
 
-                // 1. Создаём тренировку
                 var newWorkout = new Workout
                 {
                     Date = SelectedDate,
@@ -121,34 +121,27 @@ namespace PROJECT
                     Exercises = new List<Exercise>() // пустой список
                 };
 
-                // 2. Добавляем тренировку в контекст
                 context.Workouts.Add(newWorkout);
+                await context.SaveChangesAsync(); // Получаем Id тренировки
 
-                // 3. СОХРАНЯЕМ, чтобы получить Id тренировки
-                await context.SaveChangesAsync();
-
-                // 4. Создаём клонированные упражнения СО СВЯЗЬЮ
                 foreach (var ex in SelectedExercises)
                 {
                     var clonedExercise = new Exercise
                     {
+                        // ВАЖНО: НЕ КОПИРУЕМ Id!
                         Name = ex.Name,
                         Description = ex.Description,
                         Sets = ex.Sets,
                         Reps = ex.Reps,
                         Weight = ex.Weight,
-                        WorkoutId = newWorkout.Id, // ← Устанавливаем связь по внешнему ключу
-                        Workout = newWorkout       // ← Устанавливаем навигационную связь
+                        WorkoutId = newWorkout.Id // ← Только внешний ключ
+                                                  // Workout = newWorkout ← УДАЛИТЬ ЭТУ СТРОКУ!
                     };
 
-                    // 5. Добавляем упражнение в контекст
                     context.Exercises.Add(clonedExercise);
-
-                    // 6. Добавляем в коллекцию тренировки
                     newWorkout.Exercises.Add(clonedExercise);
                 }
 
-                // 7. Сохраняем упражнения
                 await context.SaveChangesAsync();
 
                 Exercises = new ObservableCollection<Exercise>(newWorkout.Exercises);
@@ -157,7 +150,16 @@ namespace PROJECT
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка сохранения тренировки: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                string errorMessage = $"Ошибка сохранения тренировки:\n{ex.Message}";
+                if (ex.InnerException != null)
+                {
+                    errorMessage += $"\n\nInner Exception:\n{ex.InnerException.Message}";
+                }
+
+                // Логируем в Debug для детального анализа
+                System.Diagnostics.Debug.WriteLine($"DEBUG ERROR:\n{errorMessage}");
+
+                MessageBox.Show(errorMessage, "Критическая ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

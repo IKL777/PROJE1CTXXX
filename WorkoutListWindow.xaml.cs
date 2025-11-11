@@ -46,24 +46,21 @@ namespace PROJECT
             var inputWindow = new WorkoutInputWindow1();
             if (inputWindow.ShowDialog() == true)
             {
-                var newWorkout = new Workout
-                {
-                    Date = inputWindow.SelectedDate,
-                    Type = inputWindow.SelectedWorkoutType,
-                    Exercises = inputWindow.Exercises.ToList()
-                };
-
                 try
                 {
+                    // Перезагружаем список тренировок из БД
                     using var context = new AppDbContext();
-                    context.Workouts.Add(newWorkout);
-                    await context.SaveChangesAsync();
+                    var workouts = await context.Workouts.Include(w => w.Exercises).ToListAsync();
 
-                    Workouts.Add(newWorkout); // Для отображения в списке
+                    Workouts.Clear();
+                    foreach (var workout in workouts)
+                    {
+                        Workouts.Add(workout);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка сохранения тренировки: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Ошибка обновления списка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
