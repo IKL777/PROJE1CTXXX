@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.WPF;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,15 +23,11 @@ namespace PROJECT
 
             CurrentWorkout = workout;
 
-            // Отображаем данные в "Детали"
             DateText.Text = $"Дата: {workout.Date:dd.MM.yyyy}";
             TypeText.Text = $"Тип: {workout.Type}";
             ExercisesList.ItemsSource = workout.Exercises;
 
-            // Загружаем и отображаем прогресс в вкладке "Сравнение"
             LoadProgressComparison();
-
-            // Загружаем упражнения для графика
             LoadProgressChart();
         }
 
@@ -43,39 +38,44 @@ namespace PROJECT
                 using var context = new AppDbContext();
                 context.Database.EnsureCreated();
 
+                // Загружаем ТРЕНИРОВКИ с их УПРАЖНЕНИЯМИ
                 var previousWorkouts = await context.Workouts
                     .Where(w => w.Date < CurrentWorkout.Date)
                     .OrderByDescending(w => w.Date)
+                    .Include(w => w.Exercises) // ← ВАЖНО: загружаем упражнения
                     .ToListAsync();
 
                 var progressList = new List<ProgressComparisonItem>();
 
                 foreach (var exercise in CurrentWorkout.Exercises)
                 {
-                    // Ищем по НАЗВАНИЮ упражнения, а не по ID
-                    var previousExercise = previousWorkouts
-                        .SelectMany(w => w.Exercises)
-                        .Where(e => e.Name == exercise.Name)
-                        .OrderByDescending(e => e.Workout.Date)
-                        .FirstOrDefault();
+                    // Ищем ПОСЛЕДНЮЮ тренировку с таким же упражнением по ИМЕНИ
+                    var lastWorkoutWithExercise = previousWorkouts
+                        .FirstOrDefault(w => w.Exercises.Any(e => e.Name == exercise.Name));
 
-                    if (previousExercise != null)
+                    if (lastWorkoutWithExercise != null)
                     {
-                        var comparisonText = GenerateComparisonText(previousExercise, exercise);
-                        progressList.Add(new ProgressComparisonItem
+                        var previousExercise = lastWorkoutWithExercise.Exercises
+                            .FirstOrDefault(e => e.Name == exercise.Name);
+
+                        if (previousExercise != null)
                         {
-                            Name = exercise.Name,
-                            ComparisonText = comparisonText
-                        });
+                            var comparisonText = GenerateComparisonText(previousExercise, exercise);
+                            progressList.Add(new ProgressComparisonItem
+                            {
+                                Name = exercise.Name,
+                                ComparisonText = comparisonText
+                            });
+                            continue;
+                        }
                     }
-                    else
+
+                    // Если не нашли — новое упражнение
+                    progressList.Add(new ProgressComparisonItem
                     {
-                        progressList.Add(new ProgressComparisonItem
-                        {
-                            Name = exercise.Name,
-                            ComparisonText = "Новое упражнение"
-                        });
-                    }
+                        Name = exercise.Name,
+                        ComparisonText = "Новое упражнение"
+                    });
                 }
 
                 ProgressComparisonList.ItemsSource = progressList;
@@ -97,7 +97,7 @@ namespace PROJECT
             if (current.Reps != old.Reps)
                 changes.Add($"Повторения: {old.Reps} → {current.Reps}");
 
-            if (current.Weight != old.Weight)
+            if (Math.Abs(current.Weight - old.Weight) > 0.01)
                 changes.Add($"Вес: {old.Weight} → {current.Weight}");
 
             return changes.Count > 0 ? string.Join(", ", changes) : "Без изменений";
@@ -110,9 +110,11 @@ namespace PROJECT
                 using var context = new AppDbContext();
                 context.Database.EnsureCreated();
 
+                // Загружаем ВСЕ тренировки с упражнениями
                 var allWorkouts = await context.Workouts
                     .Where(w => w.Date <= CurrentWorkout.Date)
                     .OrderBy(w => w.Date)
+                    .Include(w => w.Exercises) // ← ВАЖНО
                     .ToListAsync();
 
                 var allExerciseNames = allWorkouts
@@ -142,22 +144,40 @@ namespace PROJECT
                 using var context = new AppDbContext();
                 context.Database.EnsureCreated();
 
+                // Загружаем ВСЕ тренировки с упражнениями
                 var allWorkouts = await context.Workouts
                     .Where(w => w.Date <= CurrentWorkout.Date)
                     .OrderBy(w => w.Date)
+                    .Include(w => w.Exercises) // ← ВАЖНО
                     .ToListAsync();
 
-                var exerciseHistory = allWorkouts
-                    .Where(w => w.Exercises.Any(e => e.Name == selectedExerciseName))
-                    .SelectMany(w => w.Exercises.Where(e => e.Name == selectedExerciseName).Select(e => new { Date = w.Date, Exercise = e }))
-                    .ToList();
+                // Собираем ИСТОРИЮ по упражнению
+                var exerciseHistory = new List<ExerciseHistoryItem>();
+
+                foreach (var workout in allWorkouts)
+                {
+                    var exercises = workout.Exercises
+                        .Where(e => e.Name == selectedExerciseName)
+                        .ToList();
+
+                    foreach (var exercise in exercises)
+                    {
+                        exerciseHistory.Add(new ExerciseHistoryItem
+                        {
+                            Date = workout.Date,
+                            Weight = exercise.Weight,
+                            Reps = exercise.Reps,
+                            Sets = exercise.Sets
+                        });
+                    }
+                }
 
                 if (exerciseHistory.Any())
                 {
                     var dates = exerciseHistory.Select(x => x.Date).ToList();
-                    var weights = exerciseHistory.Select(x => x.Exercise.Weight).ToList();
-                    var reps = exerciseHistory.Select(x => (double)x.Exercise.Reps).ToList();
-                    var sets = exerciseHistory.Select(x => (double)x.Exercise.Sets).ToList();
+                    var weights = exerciseHistory.Select(x => x.Weight).ToList();
+                    var reps = exerciseHistory.Select(x => (double)x.Reps).ToList();
+                    var sets = exerciseHistory.Select(x => (double)x.Sets).ToList();
 
                     var series = new List<ISeries>
                     {
@@ -166,21 +186,24 @@ namespace PROJECT
                             Name = "Вес (кг)",
                             Values = weights,
                             Fill = null,
-                            GeometrySize = 10
+                            GeometrySize = 10,
+                            LineSmoothness = 0
                         },
                         new LineSeries<double>
                         {
                             Name = "Повторения",
                             Values = reps,
                             Fill = null,
-                            GeometrySize = 10
+                            GeometrySize = 10,
+                            LineSmoothness = 0
                         },
                         new LineSeries<double>
                         {
                             Name = "Подходы",
                             Values = sets,
                             Fill = null,
-                            GeometrySize = 10
+                            GeometrySize = 10,
+                            LineSmoothness = 0
                         }
                     };
 
@@ -190,7 +213,8 @@ namespace PROJECT
                         new Axis
                         {
                             Name = "Дата",
-                            Labels = dates.Select(d => d.ToString("dd.MM")).ToArray()
+                            Labels = dates.Select(d => d.ToString("dd.MM")).ToArray(),
+                            LabelsRotation = -10
                         }
                     };
                 }
@@ -215,5 +239,14 @@ namespace PROJECT
     {
         public string Name { get; set; } = string.Empty;
         public string ComparisonText { get; set; } = string.Empty;
+    }
+
+    // Вспомогательный класс для истории упражнений
+    public class ExerciseHistoryItem
+    {
+        public DateTime Date { get; set; }
+        public double Weight { get; set; }
+        public int Reps { get; set; }
+        public int Sets { get; set; }
     }
 }

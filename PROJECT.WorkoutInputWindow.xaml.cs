@@ -34,6 +34,24 @@ namespace PROJECT
             {
                 using var context = new AppDbContext();
                 context.Database.EnsureCreated();
+
+                // Проверяем, есть ли упражнения в БД
+                if (!context.Exercises.Any())
+                {
+                    // Добавляем тестовые упражнения если база пустая
+                    var defaultExercises = new List<Exercise>
+                    {
+                        new Exercise { Name = "Приседания", Description = "Базовое упражнение на ноги", Sets = 3, Reps = 10, Weight = 60 },
+                        new Exercise { Name = "Жим лёжа", Description = "Базовое упражнение на грудь", Sets = 3, Reps = 8, Weight = 50 },
+                        new Exercise { Name = "Тяга штанги", Description = "Упражнение на спину", Sets = 4, Reps = 10, Weight = 70 },
+                        new Exercise { Name = "Становая тяга", Description = "Комплексное упражнение", Sets = 3, Reps = 6, Weight = 100 },
+                        new Exercise { Name = "Подтягивания", Description = "Упражнение на спину и бицепс", Sets = 3, Reps = 8, Weight = 0 }
+                    };
+
+                    context.Exercises.AddRange(defaultExercises);
+                    await context.SaveChangesAsync();
+                }
+
                 var exercises = await context.Exercises.ToListAsync();
                 AvailableExercises.Clear();
                 foreach (var exercise in exercises)
@@ -54,7 +72,18 @@ namespace PROJECT
 
             if (listBoxItem?.DataContext is Exercise exercise)
             {
-                DragDrop.DoDragDrop(listBoxItem, exercise, DragDropEffects.Copy);
+                // КЛОНИРУЕМ упражнение при перетаскивании
+                var clonedExercise = new Exercise
+                {
+                    Id = 0, // Новый Id
+                    Name = exercise.Name,
+                    Description = exercise.Description,
+                    Sets = exercise.Sets,
+                    Reps = exercise.Reps,
+                    Weight = exercise.Weight
+                };
+
+                DragDrop.DoDragDrop(listBoxItem, clonedExercise, DragDropEffects.Copy);
                 e.Handled = true;
             }
         }
@@ -74,7 +103,8 @@ namespace PROJECT
         {
             if (e.Data.GetData(typeof(Exercise)) is Exercise exercise)
             {
-                if (!SelectedExercises.Any(ex => ex.Name == exercise.Name && ex.Sets == exercise.Sets && ex.Reps == exercise.Reps && ex.Weight == exercise.Weight))
+                // Проверяем по имени, а не по всем параметрам
+                if (!SelectedExercises.Any(ex => ex.Name == exercise.Name))
                 {
                     SelectedExercises.Add(exercise);
                 }
@@ -90,7 +120,6 @@ namespace PROJECT
                 SelectedExercises.Remove(exercise);
             }
         }
-
 
         private async void AddButton_Click1(object sender, RoutedEventArgs e)
         {
@@ -118,24 +147,22 @@ namespace PROJECT
                 {
                     Date = SelectedDate,
                     Type = SelectedWorkoutType,
-                    Exercises = new List<Exercise>() // пустой список
+                    Exercises = new List<Exercise>()
                 };
 
                 context.Workouts.Add(newWorkout);
-                await context.SaveChangesAsync(); // Получаем Id тренировки
+                await context.SaveChangesAsync();
 
                 foreach (var ex in SelectedExercises)
                 {
                     var clonedExercise = new Exercise
                     {
-                        // ВАЖНО: НЕ КОПИРУЕМ Id!
                         Name = ex.Name,
                         Description = ex.Description,
                         Sets = ex.Sets,
                         Reps = ex.Reps,
                         Weight = ex.Weight,
-                        WorkoutId = newWorkout.Id // ← Только внешний ключ
-                                                  // Workout = newWorkout ← УДАЛИТЬ ЭТУ СТРОКУ!
+                        WorkoutId = newWorkout.Id
                     };
 
                     context.Exercises.Add(clonedExercise);
@@ -156,9 +183,7 @@ namespace PROJECT
                     errorMessage += $"\n\nInner Exception:\n{ex.InnerException.Message}";
                 }
 
-                // Логируем в Debug для детального анализа
-                System.Diagnostics.Debug.WriteLine($"DEBUG ERROR:\n{errorMessage}");
-
+                Debug.WriteLine($"DEBUG ERROR:\n{errorMessage}");
                 MessageBox.Show(errorMessage, "Критическая ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
