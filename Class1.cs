@@ -1,12 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Class1
 {
@@ -32,20 +34,46 @@ namespace Class1
         }
     }
 
-    public class Exercise
+    public class Exercise : INotifyPropertyChanged
     {
+        private int _sets;
+        private int _reps;
+        private double _weight;
+
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public int Sets { get; set; }
-        public int Reps { get; set; }
-        public double Weight { get; set; }
+
+        public int Sets
+        {
+            get => _sets;
+            set { _sets = value; OnPropertyChanged(); }
+        }
+
+        public int Reps
+        {
+            get => _reps;
+            set { _reps = value; OnPropertyChanged(); }
+        }
+
+        public double Weight
+        {
+            get => _weight;
+            set { _weight = value; OnPropertyChanged(); }
+        }
 
         public int? WorkoutId { get; set; }
-        public Workout? Workout { get; set; } // ← ДОБАВЛЕНО НАВИГАЦИОННОЕ СВОЙСТВО
+        public Workout? Workout { get; set; }
 
         public string DisplayText => $"{Name} - {Sets}x{Reps} @ {Weight}kg";
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
+
 
     public class User
     {
@@ -151,13 +179,20 @@ namespace Class1
         {
             if (value is int intValue)
                 return intValue.ToString();
+            if (value is double doubleValue)
+                return doubleValue.ToString("0.##"); // 2 знака после запятой
             return "0";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is string strValue && int.TryParse(strValue, out int result))
-                return result;
+            if (value is string strValue)
+            {
+                if (int.TryParse(strValue, out int intResult))
+                    return intResult;
+                if (double.TryParse(strValue, out double doubleResult))
+                    return doubleResult;
+            }
             return 0;
         }
     }

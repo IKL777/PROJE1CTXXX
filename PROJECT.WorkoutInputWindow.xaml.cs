@@ -45,7 +45,8 @@ namespace PROJECT
                         new Exercise { Name = "Жим лёжа", Description = "Базовое упражнение на грудь", Sets = 3, Reps = 8, Weight = 50 },
                         new Exercise { Name = "Тяга штанги", Description = "Упражнение на спину", Sets = 4, Reps = 10, Weight = 70 },
                         new Exercise { Name = "Становая тяга", Description = "Комплексное упражнение", Sets = 3, Reps = 6, Weight = 100 },
-                        new Exercise { Name = "Подтягивания", Description = "Упражнение на спину и бицепс", Sets = 3, Reps = 8, Weight = 0 }
+                        new Exercise { Name = "Подтягивания", Description = "Упражнение на спину и бицепс", Sets = 3, Reps = 8, Weight = 0 },
+                        new Exercise { Name = "Отжимания", Description = "Упражнение на грудь и плечи", Sets = 3, Reps = 20, Weight = 0 }
                     };
 
                     context.Exercises.AddRange(defaultExercises);
@@ -72,17 +73,15 @@ namespace PROJECT
 
             if (listBoxItem?.DataContext is Exercise exercise)
             {
-                // КЛОНИРУЕМ упражнение при перетаскивании
                 var clonedExercise = new Exercise
                 {
-                    Id = 0, // Новый Id
+                    Id = 0,
                     Name = exercise.Name,
                     Description = exercise.Description,
                     Sets = exercise.Sets,
                     Reps = exercise.Reps,
                     Weight = exercise.Weight
                 };
-
                 DragDrop.DoDragDrop(listBoxItem, clonedExercise, DragDropEffects.Copy);
                 e.Handled = true;
             }
@@ -103,10 +102,17 @@ namespace PROJECT
         {
             if (e.Data.GetData(typeof(Exercise)) is Exercise exercise)
             {
-                // Проверяем по имени, а не по всем параметрам
+                // Проверяем ТОЛЬКО по имени — можно добавить несколько раз с разными параметрами!
                 if (!SelectedExercises.Any(ex => ex.Name == exercise.Name))
                 {
                     SelectedExercises.Add(exercise);
+                }
+                else
+                {
+                    MessageBox.Show($"Упражнение '{exercise.Name}' уже добавлено. Измените параметры в существующей карточке.",
+                        "Дубликат",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
                 }
             }
         }

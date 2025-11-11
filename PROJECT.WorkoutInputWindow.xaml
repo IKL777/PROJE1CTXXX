@@ -116,7 +116,7 @@
                                             <!-- Вес -->
                                             <TextBlock Text="Вес (кг): " Grid.Column="4" VerticalAlignment="Center"/>
                                             <TextBox Text="{Binding Weight, UpdateSourceTrigger=PropertyChanged,Converter={StaticResource StringToIntConverter}}" 
-                                             Grid.Column="5" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                                             Grid.Column="5" Margin="5,0,0,0" VerticalAlignment="Center" />
 
                                             <!-- Кнопка -->
                                             <Button Content="🗑️" Grid.Column="6" Width="50" Height="20" Margin="5,0,0,0"
