@@ -4,7 +4,7 @@
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         Title="Детали тренировки" Height="600" Width="800">
     <Window.Resources>
-        <Style TargetType="TextBlock">
+        <Style TargetType="TextBlock"     >     
             <Setter Property="FontSize" Value="14"/>
         </Style>
         <Style x:Key="TextStyle_TextBlock" TargetType="TextBlock">
