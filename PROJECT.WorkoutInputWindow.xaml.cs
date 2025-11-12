@@ -102,7 +102,7 @@ namespace PROJECT
         {
             if (e.Data.GetData(typeof(Exercise)) is Exercise exercise)
             {
-                // Проверяем ТОЛЬКО по имени — можно добавить несколько раз с разными параметрами!
+                // Проверяем ТОЛЬКО по имени
                 if (!SelectedExercises.Any(ex => ex.Name == exercise.Name))
                 {
                     SelectedExercises.Add(exercise);
@@ -196,16 +196,23 @@ namespace PROJECT
 
         private void SelectedList_DragOver(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(Exercise)))
+            if (e.Data.GetData(typeof(Exercise)) is Exercise exercise)
             {
-                e.Effects = DragDropEffects.Copy;
-                e.Handled = true;
+                // НЕ ДОБАВЛЯЕМ! Только проверяем возможность перетаскивания
+                if (!SelectedExercises.Any(ex => ex.Name == exercise.Name))
+                {
+                    e.Effects = DragDropEffects.Copy;
+                }
+                else
+                {
+                    e.Effects = DragDropEffects.None;
+                }
             }
             else
             {
                 e.Effects = DragDropEffects.None;
-                e.Handled = true;
             }
+            e.Handled = true;
         }
     }
 }

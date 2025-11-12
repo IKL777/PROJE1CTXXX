@@ -21,14 +21,17 @@ namespace PROJECT
             LoadWorkouts();
         }
 
-        private async void LoadWorkouts()
+        private async Task LoadWorkouts()
         {
             try
             {
                 using var context = new AppDbContext();
                 context.Database.EnsureCreated();
 
-                var workouts = await context.Workouts.ToListAsync();
+                var workouts = await context.Workouts
+                    .Include(w => w.Exercises) // ← Добавьте эту строку
+                    .ToListAsync();
+
                 Workouts.Clear();
                 foreach (var workout in workouts)
                 {
@@ -77,6 +80,33 @@ namespace PROJECT
         private void WorkoutList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Пока пустой — можно добавить логику, если нужно
+        }
+        private async void DeleteWorkout_Click(object sender, RoutedEventArgs e)
+        {
+            if (WorkoutList.SelectedItem is Workout workout)
+            {
+                var result = MessageBox.Show(
+                    $"Вы уверены, что хотите удалить тренировку\n{workout.Date:dd.MM.yyyy} - {workout.Type}?",
+                    "Подтверждение удаления",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question
+                );
+
+                if (result != MessageBoxResult.Yes)
+                    return;
+
+                try
+                {
+                    using var context = new AppDbContext();
+                    context.Workouts.Remove(workout);
+                    await context.SaveChangesAsync();
+                    await LoadWorkouts(); // Перезагружаем список
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка удаления тренировки: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
     }
 }

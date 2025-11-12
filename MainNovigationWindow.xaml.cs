@@ -71,7 +71,10 @@ namespace PROJECT
 
             this.Close();
         }
-
+        private void ButtonAdmin_Click(object sender, RoutedEventArgs e)
+        {
+            new WorkoutAdminControl().Show();
+        }
 
     }
 }

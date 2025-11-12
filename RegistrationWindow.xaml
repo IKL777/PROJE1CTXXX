@@ -27,6 +27,6 @@
 
         <Button Content="Войти" Width="180" Height="35" Click="LoginButton_Click" Margin="0,0,0,10" Style="{StaticResource ButtonStyle}"/>
         <Button Content="Регистрация" Width="180" Height="35" Click="RegisterButton_Click" Margin="0,0,0,10" Style="{StaticResource ButtonStyle}"/>
-        <Button Content="Admin" Width="180" Height="35" Click="ButtonAdmin_Click" Style="{StaticResource ButtonStyle}"/>
+        
     </StackPanel>
 </Window>

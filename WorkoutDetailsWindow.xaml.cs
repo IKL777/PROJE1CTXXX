@@ -40,6 +40,7 @@ namespace PROJECT
 
                 // Загружаем ТРЕНИРОВКИ с их УПРАЖНЕНИЯМИ
                 var previousWorkouts = await context.Workouts
+                    .Include(w => w.Exercises)
                     .Where(w => w.Date < CurrentWorkout.Date)
                     .OrderByDescending(w => w.Date)
                     .Include(w => w.Exercises) // ← ВАЖНО: загружаем упражнения
@@ -112,6 +113,7 @@ namespace PROJECT
 
                 // Загружаем ВСЕ тренировки с упражнениями
                 var allWorkouts = await context.Workouts
+                    .Include(w => w.Exercises)
                     .Where(w => w.Date <= CurrentWorkout.Date)
                     .OrderBy(w => w.Date)
                     .Include(w => w.Exercises) // ← ВАЖНО

@@ -17,13 +17,13 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="72*"/>
+            <RowDefinition Height="145*"/>
         </Grid.RowDefinitions>
 
-        <Button Content="➕ Создать упражнение" Click="CreateExercise_Click" Margin="10" Style="{StaticResource ButtonStyle}"/>
+        <Button Content="➕ Создать упражнение" Click="CreateExercise_Click" Margin="10,0,10,0" Style="{StaticResource ButtonStyle}" Height="119" VerticalAlignment="Center"/>
 
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Grid.Row="1" Margin="0,14,0,0">
             <StackPanel x:Name="ExercisesPanel" Margin="10"/>
         </ScrollViewer>
 

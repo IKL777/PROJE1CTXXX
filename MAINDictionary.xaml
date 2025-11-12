@@ -62,10 +62,11 @@
         <!-- Обычное состояние -->
         <Setter Property="Background" Value="{StaticResource backgroundd}" />
         <Setter Property="Foreground" Value="Black" />
-        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="Black"/>
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Padding" Value="12,6" />
-        <Setter Property="FontSize" Value="10" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
