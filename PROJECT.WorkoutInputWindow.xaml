@@ -19,7 +19,7 @@
             <DatePicker x:Name="DatePicker" SelectedDate="{x:Static sys:DateTime.Now}" Width="150"/>
 
             <TextBlock Text="Тип:" VerticalAlignment="Center" Margin="30,0,10,0" Style="{StaticResource TextStyle_TextBlock}"/>
-            <ComboBox x:Name="TypeComboBox" Width="140">
+            <ComboBox x:Name="TypeComboBox" Width="140" >
                 <ComboBoxItem Content="WithWeights" IsSelected="True" />
                 <ComboBoxItem Content="Bodyweight"/>
             </ComboBox>
@@ -106,17 +106,17 @@
                                             <!-- Подходов -->
                                             <TextBlock Text="Подходов: " Grid.Column="0" VerticalAlignment="Center"/>
                                             <TextBox Text="{Binding Sets, UpdateSourceTrigger=PropertyChanged,Converter={StaticResource StringToIntConverter}}" 
-                                             Grid.Column="1" Margin="5,0,10,0" VerticalAlignment="Center"/>
+                                             Grid.Column="1" Margin="5,0,10,0" VerticalAlignment="Center" PreviewTextInput="Number_PreviewTextInput"/>
 
                                             <!-- Повторений -->
                                             <TextBlock Text="Повторений: " Grid.Column="2" VerticalAlignment="Center"/>
                                             <TextBox Text="{Binding Reps, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToIntConverter}}" 
-                                             Grid.Column="3" Margin="5,0,10,0" VerticalAlignment="Center"/>
+                                             Grid.Column="3" Margin="5,0,10,0" VerticalAlignment="Center" PreviewTextInput="Number_PreviewTextInput"/>
 
                                             <!-- Вес -->
                                             <TextBlock Text="Вес (кг): " Grid.Column="4" VerticalAlignment="Center"/>
                                             <TextBox Text="{Binding Weight, UpdateSourceTrigger=PropertyChanged,Converter={StaticResource StringToIntConverter}}" 
-                                             Grid.Column="5" Margin="5,0,0,0" VerticalAlignment="Center" />
+                                             Grid.Column="5" Margin="5,0,0,0" VerticalAlignment="Center" PreviewTextInput="Weight_PreviewTextInput" />
 
                                             <!-- Кнопка -->
                                             <Button Content="🗑️" Grid.Column="6" Width="50" Height="20" Margin="5,0,0,0"

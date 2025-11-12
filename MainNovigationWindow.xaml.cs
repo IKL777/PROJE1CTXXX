@@ -34,7 +34,10 @@ namespace PROJECT
         private void BtnProfile_Click(object sender, RoutedEventArgs e)
         {
             var profileWindow = new ProfileWindow(); // ← окно профиля
-            profileWindow.Show();
+            if (profileWindow.ShowDialog() == true)
+            { 
+
+            }
         }
 
         private void BtnRecovery_Click(object sender, RoutedEventArgs e)

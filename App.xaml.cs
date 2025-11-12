@@ -22,21 +22,9 @@ namespace PROJECT
             RegistrationWindow registerWindow = new RegistrationWindow();
             registerWindow.Show();
         }
-        public static Cursor CustomCursor { get; private set; }
+       
 
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            base.OnStartup(e);
-
-            try
-            {
-                var uri = new Uri("/Cursor/biceps.cur");
-                var stream = Application.GetResourceStream(uri)?.Stream;
-                if (stream != null)
-                    CustomCursor = new Cursor(stream);
-            }
-            catch { /* игнорировать — будет стандартный курсор */ }
-        }
+        
     }
 
 }

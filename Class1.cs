@@ -196,4 +196,28 @@ namespace Class1
             return 0;
         }
     }
+    public class WeightConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is double weight)
+                return weight.ToString("0.##");
+            return "0";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string str && double.TryParse(str, out double result))
+            {
+                // Валидация диапазона
+                if (result < 0)
+                    throw new FormatException("Вес не может быть отрицательным");
+                if (result > 500)
+                    throw new FormatException("Максимальный вес: 500 кг");
+                return result;
+            }
+            throw new FormatException("Введите число");
+        }
+    }
+
 }

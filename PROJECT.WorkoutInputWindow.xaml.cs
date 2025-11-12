@@ -135,6 +135,27 @@ namespace PROJECT
                 return;
             }
 
+            foreach (var ex in SelectedExercises)
+            {
+                if (ex.Sets <= 0 || ex.Sets > 40)
+                {
+                    MessageBox.Show($"Упражнение '{ex.Name}': количество подходов должно быть больше 0 и меньше 40!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (ex.Reps < 0 || ex.Reps>150)
+                {
+                    MessageBox.Show($"Упражнение '{ex.Name}': повторения не могут быть отрицательными и больше 150 ", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (ex.Weight < 0 || ex.Weight > 500)
+                {
+                    MessageBox.Show($"Упражнение '{ex.Name}': вес должен быть от 0 до 500 кг!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
             SelectedDate = DatePicker.SelectedDate ?? DateTime.Now;
             var selectedItem = TypeComboBox.SelectedItem as ComboBoxItem;
             var typeStr = selectedItem?.Content?.ToString() ?? "WithWeights";
@@ -213,6 +234,18 @@ namespace PROJECT
                 e.Effects = DragDropEffects.None;
             }
             e.Handled = true;
+        }
+        private void Weight_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // Разрешаем только цифры, точку и запятую
+            e.Handled = !System.Text.RegularExpressions.Regex.IsMatch(e.Text, @"^[0-9\.\,]$");
+        }
+
+
+        private void Number_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // Разрешаем только цифры
+            e.Handled = !System.Text.RegularExpressions.Regex.IsMatch(e.Text, @"^[0-9]$");
         }
     }
 }

@@ -61,8 +61,17 @@ namespace PROJECT
             var user = App.CurrentUser;
             if (user == null) return;
 
-            if (!int.TryParse(AgeBox.Text, out int age) || age < 12) { /* валидация */ return; }
-            if (!decimal.TryParse(HeightBox.Text, out decimal height) || height < 100) { /* валидация */ return; }
+            if (!int.TryParse(AgeBox.Text, out int age) || age < 12 || age > 100)
+            {
+                MessageBox.Show("Укажите корректный возраст (от 12 до 100 лет).", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!decimal.TryParse(HeightBox.Text, out decimal height) || height < 100 || height > 250)
+            {
+                MessageBox.Show("Укажите корректный рост (от 100 до 250 см).", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             user.Age = age;
             user.Height = height;
