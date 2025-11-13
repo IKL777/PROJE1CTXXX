@@ -70,7 +70,9 @@ namespace PROJECT
                     return;
                 }
 
+                // СОХРАНЯЕМ ТЕКУЩЕГО ПОЛЬЗОВАТЕЛЯ
                 App.CurrentUser = user;
+
                 var mainWindow = new MainNovigationWindow();
                 mainWindow.Show();
                 this.Close();

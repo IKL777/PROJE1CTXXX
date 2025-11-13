@@ -1,40 +1,90 @@
 ﻿<Window x:Class="PROJECT.RecoveryTipsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PROJECT"
-        mc:Ignorable="d"
-        Title="RecoveryTipsWindow" Height="450" Width="800">
-    <!--Чтобы не добавлять по отдельности -->
+        Title="Советы по восстановлению" Height="600" Width="800">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="14"/>
         </Style>
-        <Style x:Key="TextStyle_TextBlock" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="14"/>
+        <Style x:Key="SectionHeader" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+        <Style x:Key="TipText" TargetType="TextBlock">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+        </Style>
+        <Style x:Key="NutritionCard" TargetType="Border">
+            <Setter Property="Background" Value="#F0F9FF"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
         </Style>
     </Window.Resources>
+
     <ScrollViewer Margin="20">
         <StackPanel>
-            <TextBlock Text="💤 Сон" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
-            <TextBlock TextWrapping="Wrap" Margin="0,0,0,20">
+            <!-- Сон -->
+            <TextBlock Style="{StaticResource SectionHeader}" Text="💤 Сон"/>
+            <TextBlock Style="{StaticResource TipText}">
                 Спите 7–9 часов в сутки. Во время сна вырабатывается гормон роста, который восстанавливает мышцы.
             </TextBlock>
 
-            <TextBlock Text="💧 Вода" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
-            <TextBlock TextWrapping="Wrap" Margin="0,0,0,20">
+            <!-- Вода -->
+            <TextBlock Style="{StaticResource SectionHeader}" Text="💧 Вода"/>
+            <TextBlock Style="{StaticResource TipText}">
                 Пейте 2–3 литра воды в день. Обезвоживание снижает силу и выносливость.
             </TextBlock>
 
-            <TextBlock Text="🧘 Растяжка" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
-            <TextBlock TextWrapping="Wrap" Margin="0,0,0,20">
+            <!-- Растяжка -->
+            <TextBlock Style="{StaticResource SectionHeader}" Text="🧘 Растяжка"/>
+            <TextBlock Style="{StaticResource TipText}">
                 Делайте растяжку после тренировки — это уменьшает боли и улучшает гибкость.
             </TextBlock>
 
-            <TextBlock Text="🥗 Питание" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
-            <TextBlock TextWrapping="Wrap">
-                Ешьте белок после тренировки (курица, яйца, творог) — это ускоряет восстановление мышц.
+            <!-- Питание с КБЖУ -->
+            <TextBlock Style="{StaticResource SectionHeader}" Text="🥗 Питание и КБЖУ"/>
+
+            <!-- Карточка с расчётом -->
+            <Border Style="{StaticResource NutritionCard}">
+                <StackPanel Margin="2" Background="#FFFFFF" >
+                    <TextBlock Text="Ваш индивидуальный расчёт КБЖУ:" FontWeight="Bold" FontSize="16" Margin="0,0,0,15"/>
+
+                    <Grid Margin="0,0,0,15" Background="#FAFAFA" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Row="0">
+                            <TextBlock Grid.Column="0" Text="Калории:" FontWeight="Bold" Margin="0,10,0,10" Foreground="#555555"/>
+                            <TextBlock x:Name="CaloriesText" Grid.Column="0" Text="— ккал/день" Width="auto"/>
+                        </StackPanel>
+                        <TextBlock Grid.Column="0" Text="Белки:" FontWeight="Bold" Grid.Row="1" VerticalAlignment="Center" Height="25" Foreground="#555555"/>
+                        <TextBlock x:Name="ProteinText" Text="— г/день" Grid.Row="1" Grid.ColumnSpan="2" Margin="80,0,0,0" Height="24" VerticalAlignment="Center"  Foreground="#222"/>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" >
+                            <TextBlock Grid.Column="0" Text="Жиры:" FontWeight="Bold" Foreground="#555555"/>
+                            <TextBlock x:Name="FatText" Text="— г/день" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="3">
+                            <TextBlock Grid.Column="0" Text="Углеводы:" FontWeight="Bold"  Foreground="#555555"/>
+                            <TextBlock   x:Name="CarbsText" Text="— г/день" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="* Расчёт основан на ваших данных из профиля" FontStyle="Italic" FontSize="12" Foreground="Gray"/>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Style="{StaticResource TipText}">
+                Ешьте белок после тренировки (курица, яйца, творог) — это ускоряет восстановление мышц. 
+                Разделите приём пищи на 4-5 раз в день для лучшего усвоения питательных веществ.
             </TextBlock>
         </StackPanel>
     </ScrollViewer>

@@ -42,6 +42,10 @@
             <TextBlock Text="Рост (см):" FontWeight="Bold"/>
             <TextBox x:Name="HeightBox" Margin="0,0,0,20" Text="175"/>
 
+            <TextBlock Text="Вес :" FontWeight="Bold"/>
+            <TextBox x:Name="WeightBox" Margin="0,0,0,20" Text="68"/>
+
+
             <TextBlock Text="Уровень подготовки:" FontWeight="Bold"/>
             <ComboBox x:Name="FitnessLevelBox" SelectedIndex="0" Margin="0,0,0,10">
                 <ComboBoxItem Content="Новичок"/>

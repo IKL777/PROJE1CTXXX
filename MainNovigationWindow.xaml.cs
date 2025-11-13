@@ -33,16 +33,21 @@ namespace PROJECT
 
         private void BtnProfile_Click(object sender, RoutedEventArgs e)
         {
-            var profileWindow = new ProfileWindow(); // ← окно профиля
-            if (profileWindow.ShowDialog() == true)
-            { 
-
+            if (App.CurrentUser != null)
+            {
+                // ПЕРЕДАЁМ ТЕКУЩЕГО ПОЛЬЗОВАТЕЛЯ
+                var tipsWindow = new RecoveryTipsWindow(App.CurrentUser);
+                tipsWindow.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("Сначала войдите в профиль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
         private void BtnRecovery_Click(object sender, RoutedEventArgs e)
         {
-            var recoveryWindow = new RecoveryTipsWindow(); // ← советы по восстановлению
+            var recoveryWindow = new RecoveryTipsWindow(App.CurrentUser); // ← советы по восстановлению
             recoveryWindow.Show();
         }
 

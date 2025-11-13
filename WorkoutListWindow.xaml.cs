@@ -29,7 +29,9 @@ namespace PROJECT
                 context.Database.EnsureCreated();
 
                 var workouts = await context.Workouts
-                    .Include(w => w.Exercises) // ← Добавьте эту строку
+                    .Where(w => w.UserId == App.CurrentUser.Id) // ← КЛЮЧЕВОЙ ФИЛЬТР
+                    .OrderBy(w => w.Date)
+                    .Include(w => w.Exercises) 
                     .ToListAsync();
 
                 Workouts.Clear();

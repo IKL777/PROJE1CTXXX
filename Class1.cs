@@ -22,6 +22,8 @@ namespace Class1
         public Class1.WorkoutType Type { get; set; }
 
         public List<Exercise> Exercises { get; set; } = new();
+        public int UserId { get; set; }
+        public User User { get; set; }
 
         public string DisplayText
         {
@@ -88,6 +90,8 @@ namespace Class1
         public int WorkoutsPerWeek { get; set; }
         public int PreferredDuration { get; set; }
         public string EquipmentCsv { get; set; } = string.Empty;
+
+        public decimal Weight { get; set; }
 
         [NotMapped]
         public List<string> Equipment
@@ -161,8 +165,14 @@ namespace Class1
             modelBuilder.Entity<Workout>()
                 .HasMany(w => w.Exercises)
                 .WithOne(e => e.Workout)
+                
                 .HasForeignKey(e => e.WorkoutId)
                 .OnDelete(DeleteBehavior.Cascade); // ← Каскадное удаление при удалении тренировки
+
+            modelBuilder.Entity<Workout>()
+                .HasOne(w => w.User)
+                .WithMany()
+                .HasForeignKey(w => w.UserId); // ← СВЯЗЬ С ПОЛЬЗОВАТЕЛЕМ
 
             // Указываем, что упражнение может существовать без тренировки
             modelBuilder.Entity<Exercise>()

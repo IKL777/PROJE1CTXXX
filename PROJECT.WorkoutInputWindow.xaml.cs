@@ -174,6 +174,7 @@ namespace PROJECT
                 {
                     Date = SelectedDate,
                     Type = SelectedWorkoutType,
+                    UserId=App.CurrentUser.Id,
                     Exercises = new List<Exercise>()
                 };
 

@@ -1,12 +1,13 @@
 ﻿using Class1;
 using Microsoft.EntityFrameworkCore;
+using PROJECT;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using PROJECT;
+using System.Windows.Media.Media3D;
 
 namespace PROJECT
 {
@@ -23,6 +24,7 @@ namespace PROJECT
         {
             var username = UsernameBox.Text.Trim();
             var password = _isPasswordVisible ? PasswordText.Text.Trim() : PasswordBox.Password.Trim();
+            
 
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
@@ -42,6 +44,12 @@ namespace PROJECT
                 return;
             }
 
+            if (!decimal.TryParse(WeightBox.Text, out decimal weight) || weight< 45 || weight > 150)
+            {
+                MessageBox.Show("Укажите корректный вес (от 45 до 150 кг).", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             var equipment = EquipmentBox.SelectedItems.Cast<ListBoxItem>()
                 .Select(item => item.Content.ToString())
                 .ToList();
@@ -57,7 +65,8 @@ namespace PROJECT
                 Goal = (GoalBox.SelectedItem as ComboBoxItem)?.Content?.ToString(),
                 WorkoutsPerWeek = int.Parse((WorkoutsPerWeekBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "3"),
                 PreferredDuration = int.Parse((DurationBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "60"),
-                Equipment = equipment
+                Equipment = equipment,
+                Weight = weight
             };
 
             try

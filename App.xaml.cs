@@ -22,9 +22,10 @@ namespace PROJECT
             RegistrationWindow registerWindow = new RegistrationWindow();
             registerWindow.Show();
         }
-       
-
         
+
+
+
     }
 
 }
