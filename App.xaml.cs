@@ -22,7 +22,31 @@ namespace PROJECT
             RegistrationWindow registerWindow = new RegistrationWindow();
             registerWindow.Show();
         }
-        
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            // Загружаем пользователя из файла
+            CurrentUser = User.LoadFromJson();
+
+            // Если нет — создаём дефолтного
+            if (CurrentUser == null)
+            {
+                CurrentUser = new User
+                {
+                    Username = "1",
+                    Age = 25,
+                    Height = 175.0m,
+                    Weight = 68.0m,
+                    Gender = "Мужской",
+                    FitnessLevel = "Новичок",
+                    Goal = "Набор массы",
+                    Equipment = new List<string> { "Гантели", "Штанга" },
+                    WorkoutsPerWeek = 3,
+                    PreferredDuration = 45
+                };
+            }
+        }
 
 
 

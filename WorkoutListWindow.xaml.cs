@@ -53,15 +53,17 @@ namespace PROJECT
             {
                 try
                 {
-                    // Перезагружаем список тренировок из БД
-                    using var context = new AppDbContext();
-                    var workouts = await context.Workouts.Include(w => w.Exercises).ToListAsync();
+                    //// Перезагружаем список тренировок из БД
+                    //using var context = new AppDbContext();
+                    //var workouts = await context.Workouts.Include(w => w.Exercises).ToListAsync();
 
-                    Workouts.Clear();
-                    foreach (var workout in workouts)
-                    {
-                        Workouts.Add(workout);
-                    }
+                    //Workouts.Clear();
+                    //foreach (var workout in workouts)
+                    //{
+                    //    Workouts.Add(workout);
+                    //}
+
+                    LoadWorkouts();
                 }
                 catch (Exception ex)
                 {

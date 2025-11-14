@@ -38,7 +38,7 @@ namespace PROJECT
             try
             {
                 double heightInCm = (double)_currentUser.Height;
-                double weightInKg = 70;
+                double weightInKg = (double)_currentUser.Weight;
                 // 1. Расчёт базового метаболизма (формула Миффлина-Сан Жеора)
                 double bmr;
                 if (_currentUser.Gender?.ToLower() == "мужской" || _currentUser.Gender?.ToLower() == "male")
@@ -78,12 +78,35 @@ namespace PROJECT
                 calories = Math.Round(calories / 50) * 50; // округляем до 50 ккал
 
                 // 5. Расчёт макронутриентов
-                double protein = Math.Round(heightInCm * 1.8); // 1.8г белка на кг веса
-                double fat = Math.Round(heightInCm * 0.9); // 0.9г жиров на кг веса
+                double protein = Math.Round(weightInKg * 1.8); // 1.8г белка на кг веса
+                double fat = Math.Round(weightInKg * 0.9); // 0.9г жиров на кг веса
                 double proteinCalories = protein * 4;
                 double fatCalories = fat * 9;
                 double carbsCalories = calories - proteinCalories - fatCalories;
                 double carbs = Math.Round(carbsCalories / 4);
+
+                if (carbsCalories < 0)
+                {
+                    // Сначала снижаем жиры
+                    fat = Math.Round(weightInKg * 0.7);
+                    fatCalories = fat * 9;
+                    carbsCalories = calories - proteinCalories - fatCalories;
+
+                    if (carbsCalories < 0)
+                    {
+                        // Затем снижаем белки
+                        protein = Math.Round(weightInKg * 1.5);
+                        proteinCalories = protein * 4;
+                        carbsCalories = calories - proteinCalories - fatCalories;
+
+                        if (carbsCalories < 0)
+                        {
+                            // Крайний случай — углеводы = 0
+                            carbsCalories = 0;
+                            // Можно добавить лог или предупреждение в интерфейс
+                        }
+                    }
+                }
 
                 // 6. Отображение результатов
                 CaloriesText.Text = $"{(int)calories} ккал/день";

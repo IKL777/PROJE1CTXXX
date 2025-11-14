@@ -18,7 +18,7 @@
     <ScrollViewer>
         <StackPanel Margin="20">
             <TextBlock Text="Логин (нельзя изменить):" FontWeight="Bold"/>
-            <TextBox x:Name="UsernameBox" IsEnabled="False" Margin="0,0,0,10"/>
+            <TextBox x:Name="UsernameBox" IsEnabled="False" Margin="0,0,0,10" Text=""/>
 
             <TextBlock Text="Возраст:" FontWeight="Bold"/>
             <TextBox x:Name="AgeBox" Margin="0,0,0,10"/>
@@ -31,6 +31,9 @@
 
             <TextBlock Text="Рост (см):" FontWeight="Bold"/>
             <TextBox x:Name="HeightBox" Margin="0,0,0,20"/>
+
+            <TextBlock Text="Вес :" FontWeight="Bold"/>
+            <TextBox x:Name="WeightBox" Margin="0,0,0,20" Text="68"/>
 
             <TextBlock Text="Уровень подготовки:" FontWeight="Bold"/>
             <ComboBox x:Name="FitnessLevelBox" Margin="0,0,0,10">
@@ -52,6 +55,9 @@
                 <ListBoxItem Content="Штанга"/>
                 <ListBoxItem Content="Тренажёры"/>
                 <ListBoxItem Content="Вес тела"/>
+                <ListBoxItem Content="Турник"/>
+                <ListBoxItem Content="Брусья"/>
+                <ListBoxItem Content="Гири"/>
             </ListBox>
 
             <TextBlock Text="Тренировок в неделю:" FontWeight="Bold"/>

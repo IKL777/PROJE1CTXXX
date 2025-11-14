@@ -14,6 +14,7 @@ namespace PROJECT
     public partial class WorkoutDetailsWindow : Window
     {
         private Workout CurrentWorkout;
+       
 
         public WorkoutDetailsWindow(Workout workout)
         {
@@ -21,6 +22,7 @@ namespace PROJECT
             if (workout == null)
                 return;
 
+            
             CurrentWorkout = workout;
 
             DateText.Text = $"Дата: {workout.Date:dd.MM.yyyy}";
@@ -40,8 +42,8 @@ namespace PROJECT
 
                 // Загружаем ТРЕНИРОВКИ с их УПРАЖНЕНИЯМИ
                 var previousWorkouts = await context.Workouts
-                    .Include(w => w.Exercises)
-                    .Where(w => w.Date < CurrentWorkout.Date)
+                    
+                    .Where(w => w.Date < CurrentWorkout.Date && w.User.Id == CurrentWorkout.UserId)
                     .OrderByDescending(w => w.Date)
                     .Include(w => w.Exercises) // ← ВАЖНО: загружаем упражнения
                     .ToListAsync();
@@ -114,7 +116,7 @@ namespace PROJECT
                 // Загружаем ВСЕ тренировки с упражнениями
                 var allWorkouts = await context.Workouts
                     .Include(w => w.Exercises)
-                    .Where(w => w.Date <= CurrentWorkout.Date)
+                    .Where(w => w.Date <= CurrentWorkout.Date && w.User.Id == CurrentWorkout.UserId)
                     .OrderBy(w => w.Date)
                     .Include(w => w.Exercises) // ← ВАЖНО
                     .ToListAsync();
@@ -148,7 +150,7 @@ namespace PROJECT
 
                 // Загружаем ВСЕ тренировки с упражнениями
                 var allWorkouts = await context.Workouts
-                    .Where(w => w.Date <= CurrentWorkout.Date)
+                    .Where(w => w.Date <= CurrentWorkout.Date && w.User.Id == CurrentWorkout.UserId)
                     .OrderBy(w => w.Date)
                     .Include(w => w.Exercises) // ← ВАЖНО
                     .ToListAsync();

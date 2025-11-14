@@ -22,6 +22,7 @@ namespace PROJECT
 
         private async void Save_Click(object sender, RoutedEventArgs e)
         {
+
             var username = UsernameBox.Text.Trim();
             var password = _isPasswordVisible ? PasswordText.Text.Trim() : PasswordBox.Password.Trim();
             
@@ -84,6 +85,8 @@ namespace PROJECT
                 context.Users.Add(user);
                 await context.SaveChangesAsync();
 
+                user.SaveToJson();
+
                 MessageBox.Show("Профиль успешно сохранён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 DialogResult = true;
                 Close();
@@ -118,6 +121,11 @@ namespace PROJECT
                 TogglePasswordButton.Content = "🔒";
                 _isPasswordVisible = true;
             }
+        }
+
+        private void GoalBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

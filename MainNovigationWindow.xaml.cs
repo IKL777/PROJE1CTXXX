@@ -33,6 +33,12 @@ namespace PROJECT
 
         private void BtnProfile_Click(object sender, RoutedEventArgs e)
         {
+            var ProfileWindow= new ProfileWindow();
+            ProfileWindow.Show();
+        }
+
+        private void BtnRecovery_Click(object sender, RoutedEventArgs e)
+        {
             if (App.CurrentUser != null)
             {
                 // ПЕРЕДАЁМ ТЕКУЩЕГО ПОЛЬЗОВАТЕЛЯ
@@ -43,12 +49,6 @@ namespace PROJECT
             {
                 MessageBox.Show("Сначала войдите в профиль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-        }
-
-        private void BtnRecovery_Click(object sender, RoutedEventArgs e)
-        {
-            var recoveryWindow = new RecoveryTipsWindow(App.CurrentUser); // ← советы по восстановлению
-            recoveryWindow.Show();
         }
 
         private void BtnPrograms_Click(object sender, RoutedEventArgs e)

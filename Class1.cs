@@ -1,14 +1,19 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
-using Microsoft.EntityFrameworkCore;
+using System.Xml;
+
+
 
 namespace Class1
 {
@@ -100,6 +105,22 @@ namespace Class1
                 ? new List<string>()
                 : EquipmentCsv.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
             set => EquipmentCsv = string.Join(",", value);
+        }
+        public static string DataFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PROJECT", "user.json");
+
+        public static User LoadFromJson()
+        {
+            if (!File.Exists(DataFilePath)) return null;
+
+            string json = File.ReadAllText(DataFilePath);
+            return JsonConvert.DeserializeObject<User>(json);
+        }
+
+        public void SaveToJson()
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(DataFilePath));
+            string json = JsonConvert.SerializeObject(this, Newtonsoft.Json.Formatting.Indented);
+            File.WriteAllText(DataFilePath, json);
         }
     }
 

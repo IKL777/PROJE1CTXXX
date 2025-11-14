@@ -1,0 +1,12 @@
+{
+  "Username": "1",
+  "Age": 25,
+  "Height": 175.0,
+  "Weight": 80.0,
+  "Gender": "Мужской",
+  "FitnessLevel": "Новичок",
+  "Goal": "Набор массы",
+  "Equipment": [ "Гантели", "Штанга" ],
+  "WorkoutsPerWeek": 3,
+  "PreferredDuration": 45
+}

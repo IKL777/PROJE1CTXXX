@@ -10,6 +10,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 
 namespace PROJECT
@@ -22,6 +23,7 @@ namespace PROJECT
         public ProfileWindow()
         {
             InitializeComponent();
+            LoadUserData();
         }
         private void LoadUserData()
         {
@@ -31,6 +33,7 @@ namespace PROJECT
             UsernameBox.Text = user.Username;
             AgeBox.Text = user.Age.ToString();
             HeightBox.Text = user.Height.ToString();
+            WeightBox.Text = user.Weight.ToString();
 
             // Пол
             GenderBox.SelectedIndex = user.Gender == "Женский" ? 1 : 0;
@@ -43,6 +46,7 @@ namespace PROJECT
             var goals = new[] { "Набор массы", "Сушка", "Выносливость" };
             GoalBox.SelectedIndex = System.Array.IndexOf(goals, user.Goal);
 
+           
             // Оборудование
             foreach (var item in EquipmentBox.Items.OfType<ListBoxItem>())
             {
@@ -73,17 +77,24 @@ namespace PROJECT
                 return;
             }
 
+            if (!decimal.TryParse(WeightBox.Text, out decimal weight) || weight < 30 || weight > 300)
+            {
+                MessageBox.Show("Укажите корректный вес (от 30 до 200 кг).", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             user.Age = age;
             user.Height = height;
             user.Gender = (GenderBox.SelectedItem as ComboBoxItem)?.Content.ToString();
             user.FitnessLevel = (FitnessLevelBox.SelectedItem as ComboBoxItem)?.Content.ToString();
             user.Goal = (GoalBox.SelectedItem as ComboBoxItem)?.Content.ToString();
-
+            user.Weight = weight;
             user.Equipment = EquipmentBox.SelectedItems.Cast<ListBoxItem>()
                 .Select(item => item.Content.ToString()).ToList();
 
             user.WorkoutsPerWeek = WorkoutsPerWeekBox.SelectedIndex + 2;
             user.PreferredDuration = int.Parse((DurationBox.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "60");
+            
 
             MessageBox.Show("Профиль сохранён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             Close();
