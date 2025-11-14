@@ -140,7 +140,7 @@ namespace Class1
         {
             var beginnerProgram = new WorkoutProgram
             {
-                Name = "🔥 Новичок: Набор массы",
+                Name = "Калистеника",
                 Description = "3 тренировки в неделю. Акцент на базовые упражнения.",
                 Exercises = new List<Exercise>
                 {

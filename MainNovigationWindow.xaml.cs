@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Class1;
+using PR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Class1;
 
 namespace PROJECT
 {
@@ -53,7 +54,7 @@ namespace PROJECT
 
         private void BtnPrograms_Click(object sender, RoutedEventArgs e)
         {
-            var programsWindow = new WorkoutProgramsWindow(); // ← готовые комплексы
+            var programsWindow = new WorkoutProgramsWindow();
             programsWindow.Show();
         }
 

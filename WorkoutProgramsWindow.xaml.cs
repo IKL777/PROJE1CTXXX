@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Class1;
+using PR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Class1;
 
 namespace PROJECT
 {
@@ -24,7 +25,9 @@ namespace PROJECT
         {
             public string Name { get; set; }
             public string Description { get; set; }
+            public List<Exercise> Exercises { get; set; } = new List<Exercise>();
         }
+
         public WorkoutProgramsWindow()
         {
             InitializeComponent();
@@ -32,21 +35,24 @@ namespace PROJECT
         }
         private void LoadPrograms()
         {
-            var programs = new List<ProgramItem>
+            var programs = ProgramRepository.Programs.Select(p => new GotovieKompleksi.ProgramItem
             {
-                new ProgramItem { Name = "Новичок: Набор массы", Description = "3 тренировки в неделю, акцент на базовые упражнения" },
-                new ProgramItem { Name = "Сушка за 4 недели", Description = "Кардио + силовые, дефицит калорий" },
-                new ProgramItem { Name = "Выносливость: Бег + Силовая", Description = "5 тренировок в неделю" }
-            };
+                Name = p.Name,
+                Description = p.Description,
+                Exercises = p.Exercises
+            }).ToList();
 
             ProgramsList.ItemsSource = programs;
         }
+
         private void BtnDetails_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is ProgramItem program)
+            if (sender is Button button && button.Tag is GotovieKompleksi.ProgramItem program)
             {
-                MessageBox.Show(program.Description, program.Name);
+                var detailsWindow = new GotovieKompleksi(program);
+                detailsWindow.ShowDialog();
             }
         }
+
     }
 }
