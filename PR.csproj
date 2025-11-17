@@ -6,11 +6,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>Pop cat open.ico</ApplicationIcon>
+    <ApplicationIcon>dumbbell_sport_5072.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Pop cat open.ico" />
+    <Content Include="dumbbell_sport_5072.ico" />
   </ItemGroup>
 
   <ItemGroup>
