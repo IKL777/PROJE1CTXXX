@@ -1,20 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore;
-using LiveChartsCore;
-using LiveChartsCore.SkiaSharpView;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Media;
+using System.IO;
+using System.Text;
 using Class1;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using Microsoft.EntityFrameworkCore;
 
 namespace PROJECT
 {
     public partial class WorkoutDetailsWindow : Window
     {
         private Workout CurrentWorkout;
-       
+
 
         public WorkoutDetailsWindow(Workout workout)
         {
@@ -22,7 +28,7 @@ namespace PROJECT
             if (workout == null)
                 return;
 
-            
+
             CurrentWorkout = workout;
 
             DateText.Text = $"Дата: {workout.Date:dd.MM.yyyy}";
@@ -42,7 +48,7 @@ namespace PROJECT
 
                 // Загружаем ТРЕНИРОВКИ с их УПРАЖНЕНИЯМИ
                 var previousWorkouts = await context.Workouts
-                    
+
                     .Where(w => w.Date < CurrentWorkout.Date && w.User.Id == CurrentWorkout.UserId)
                     .OrderByDescending(w => w.Date)
                     .Include(w => w.Exercises) // ← ВАЖНО: загружаем упражнения
@@ -93,17 +99,56 @@ namespace PROJECT
         private string GenerateComparisonText(Exercise old, Exercise current)
         {
             var changes = new List<string>();
+            bool hasImprovement = false;
+            bool hasDecline = false;
 
-            if (current.Sets != old.Sets)
-                changes.Add($"Подходы: {old.Sets} → {current.Sets}");
+            if (current.Weight > old.Weight)
+            {
+                changes.Add($"↑ Вес: {old.Weight} → {current.Weight} (+{(current.Weight - old.Weight):0.#} кг)");
+                hasImprovement = true;
+            }
+            else if (current.Weight < old.Weight)
+            {
+                changes.Add($"↓ Вес: {old.Weight} → {current.Weight} ({(current.Weight - old.Weight):0.#} кг)");
+                hasDecline = true;
+            }
 
-            if (current.Reps != old.Reps)
-                changes.Add($"Повторения: {old.Reps} → {current.Reps}");
+            // Анализируем ПОВТОРЕНИЯ
+            if (current.Reps > old.Reps)
+            {
+                changes.Add($"↑ Повторения: {old.Reps} → {current.Reps} (+{current.Reps - old.Reps})");
+                hasImprovement = true;
+            }
+            else if (current.Reps < old.Reps)
+            {
+                changes.Add($"↓ Повторения: {old.Reps} → {current.Reps} ({current.Reps - old.Reps})");
+                hasDecline = true;
+            }
 
-            if (Math.Abs(current.Weight - old.Weight) > 0.01)
-                changes.Add($"Вес: {old.Weight} → {current.Weight}");
+            // Анализируем ПОДХОДЫ
+            if (current.Sets > old.Sets)
+            {
+                changes.Add($"↑ Подходы: {old.Sets} → {current.Sets} (+{current.Sets - old.Sets})");
+                hasImprovement = true;
+            }
+            else if (current.Sets < old.Sets)
+            {
+                changes.Add($"↓ Подходы: {old.Sets} → {current.Sets} ({current.Sets - old.Sets})");
+                hasDecline = true;
+            }
 
-            return changes.Count > 0 ? string.Join(", ", changes) : "Без изменений";
+            // Определяем итоговый цвет на основе изменений
+            if (changes.Count == 0)
+                return "Без изменений";
+
+            if (hasImprovement && hasDecline)
+                return $"⚠️ Смешанный прогресс:\n{string.Join("\n", changes)}";
+            if (hasImprovement)
+                return $"✅ Улучшение:\n{string.Join("\n", changes)}";
+            if (hasDecline)
+                return $"❌ Ухудшение:\n{string.Join("\n", changes)}";
+
+            return string.Join("\n", changes);
         }
 
         private async void LoadProgressChart()
@@ -134,6 +179,84 @@ namespace PROJECT
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка загрузки данных для графика: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        //Export в Excel
+        private async void ExportToCsv_Click(object sender, RoutedEventArgs e)
+        {
+            if (ExerciseComboBox.SelectedItem is string selectedExerciseName &&
+                !string.IsNullOrEmpty(selectedExerciseName))
+            {
+                try
+                {
+                    using var context = new AppDbContext();
+                    context.Database.EnsureCreated();
+
+                    var allWorkouts = await context.Workouts
+                        .Where(w => w.Date <= CurrentWorkout.Date && w.UserId == CurrentWorkout.UserId)
+                        .OrderBy(w => w.Date)
+                        .Include(w => w.Exercises)
+                        .ToListAsync();
+
+                    var exerciseHistory = new List<ExerciseHistoryItem>();
+                    foreach (var workout in allWorkouts)
+                    {
+                        var exercises = workout.Exercises
+                            .Where(ex => ex.Name == selectedExerciseName)
+                            .ToList();
+
+                        foreach (var exercise in exercises)
+                        {
+                            exerciseHistory.Add(new ExerciseHistoryItem
+                            {
+                                Date = workout.Date,
+                                Weight = exercise.Weight,
+                                Reps = exercise.Reps,
+                                Sets = exercise.Sets
+                            });
+                        }
+                    }
+
+                    if (exerciseHistory.Count == 0)
+                    {
+                        MessageBox.Show($"Нет данных для упражнения '{selectedExerciseName}'", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                    }
+
+                    var csv = new StringBuilder();
+                    csv.AppendLine("\uFEFF"); // BOM для UTF-8 в Excel
+                    csv.AppendLine("Дата;Вес (кг);Повторения;Подходы");
+
+                    foreach (var item in exerciseHistory)
+                    {
+                        csv.AppendLine($"{item.Date:dd.MM.yyyy};{item.Weight.ToString("0.0", CultureInfo.InvariantCulture)};{item.Reps};{item.Sets}");
+                    }
+
+                    string safeName = string.Join("_", selectedExerciseName.Split(Path.GetInvalidFileNameChars()));
+                    string fileName = $"Прогресс_{safeName}_{DateTime.Now:yyyyMMdd}.csv";
+                    string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                    string filePath = Path.Combine(desktopPath, fileName);
+
+                        File.WriteAllText(filePath, csv.ToString(), Encoding.UTF8);
+                    if (MessageBox.Show($"Данные экспортированы в:\n{filePath}\n\nОткрыть в Excel?", "Успех", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = filePath,
+                            UseShellExecute = true
+                        });
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка экспорта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Выберите упражнение для экспорта из списка выше", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -236,8 +359,11 @@ namespace PROJECT
         private void BtnClose_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+     
         }
-    }
+    } }
+
+
 
     public class ProgressComparisonItem
     {
@@ -253,4 +379,4 @@ namespace PROJECT
         public int Reps { get; set; }
         public int Sets { get; set; }
     }
-}
+

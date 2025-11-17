@@ -9,8 +9,10 @@
     <Brush x:Key="akcent_access_color">#4ade80</Brush>
     <Brush x:Key="akcent_access_color2">#1C5430</Brush>
 
+    
     <!-- Конвертер для числовых полей -->
     <local:StringToIntConverter x:Key="StringToIntConverter" />
+    
 
     <Style x:Key="ButtonStyle" TargetType="Button">
         <!-- Обычное состояние -->

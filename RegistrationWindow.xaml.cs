@@ -1,12 +1,11 @@
-﻿using Class1;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using PROJECT;
+using Class1;
+using Microsoft.EntityFrameworkCore;
+using PR;
 
 namespace PROJECT
 {
@@ -59,20 +58,24 @@ namespace PROJECT
             try
             {
                 using var context = new AppDbContext();
-                context.Database.EnsureCreated(); // На случай, если БД ещё не создана
+                context.Database.EnsureCreated();
 
+                // ✅ ИЩЕМ ТОЛЬКО ПО ЛОГИНУ (без пароля!)
                 var user = await context.Users
-                    .FirstOrDefaultAsync(u => u.Username == username && u.Password == password);
+                    .FirstOrDefaultAsync(u => u.Username == username);
 
-                if (user == null)
+                // ✅ ПРОВЕРЯЕМ ХЕШ ТОЛЬКО ЕСЛИ ПОЛЬЗОВАТЕЛЬ НАЙДЕН
+                if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
                 {
+                    await Task.Delay(500); // Защита от брутфорса
                     MessageBox.Show("Неверное имя или пароль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    // ✅ Очищаем ТОЛЬКО поле пароля (логин оставляем)
+                    PasswordBox.Clear();
+                    PasswordText.Clear();
                     return;
                 }
 
-                // СОХРАНЯЕМ ТЕКУЩЕГО ПОЛЬЗОВАТЕЛЯ
                 App.CurrentUser = user;
-
                 var mainWindow = new MainNovigationWindow();
                 mainWindow.Show();
                 this.Close();
@@ -81,8 +84,12 @@ namespace PROJECT
             {
                 MessageBox.Show($"Ошибка входа: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
 
-        
+
+        }
+        private void ForgotPassword_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Забыли пароль? Создайте новый аккаунт");
+        }
     }
 }

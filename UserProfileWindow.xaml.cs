@@ -22,10 +22,16 @@ namespace PROJECT
 
         private async void Save_Click(object sender, RoutedEventArgs e)
         {
-
-            var username = UsernameBox.Text.Trim();
-            var password = _isPasswordVisible ? PasswordText.Text.Trim() : PasswordBox.Password.Trim();
             
+            var username = UsernameBox.Text.Trim();
+            var password = _isPasswordVisible ? PasswordText.Text.Trim() : PasswordBox.Password.Trim();//
+
+
+            if (password.Length < 6)//Защита длины пароля
+            {
+                MessageBox.Show("Пароль должен содержать минимум 6 символов", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
@@ -55,10 +61,12 @@ namespace PROJECT
                 .Select(item => item.Content.ToString())
                 .ToList();
 
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);//хэширование пароля 
+
             var user = new User
             {
                 Username = username,
-                Password = password,
+                Password = hashedPassword,
                 Age = age,
                 Gender = (GenderBox.SelectedItem as ComboBoxItem)?.Content?.ToString(),
                 Height = height,
@@ -89,6 +97,7 @@ namespace PROJECT
 
                 MessageBox.Show("Профиль успешно сохранён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 DialogResult = true;
+                
                 Close();
             }
             catch (Exception ex)

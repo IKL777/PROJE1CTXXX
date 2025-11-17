@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,7 +9,11 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Xml;
+using LiveChartsCore.SkiaSharpView.Painting.ImageFilters;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 
 
@@ -204,6 +206,27 @@ namespace Class1
         }
     }
 
+    public class ProgressToColorConverter : IValueConverter //Конвертор для цвета 
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string comparisonText)
+            {
+                if (comparisonText.Contains("↑") || comparisonText.Contains("увелич"))
+                    return new SolidColorBrush(Colors.LightGreen); // Улучшение
+                if (comparisonText.Contains("↓") || comparisonText.Contains("уменьш"))
+                    return new SolidColorBrush(Colors.LightPink); // Ухудшение
+            }
+            return new SolidColorBrush(Colors.White); // Нейтральный
+        }
+
+        
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
     public class StringToIntConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

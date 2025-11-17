@@ -27,6 +27,12 @@
 
         <Button Content="Войти" Width="180" Height="35" Click="LoginButton_Click" Margin="0,0,0,10" Style="{StaticResource ButtonStyle}"/>
         <Button Content="Регистрация" Width="180" Height="35" Click="RegisterButton_Click" Margin="0,0,0,10" Style="{StaticResource ButtonStyle}"/>
-        
+        <Button Content="Забыли пароль?" 
+            Click="ForgotPassword_Click" 
+            Background="Transparent" 
+            BorderThickness="0" 
+            Foreground="Blue" 
+            Cursor="Hand"/>
     </StackPanel>
+    
 </Window>

@@ -44,7 +44,7 @@ namespace PROJECT
             {
                 // ПЕРЕДАЁМ ТЕКУЩЕГО ПОЛЬЗОВАТЕЛЯ
                 var tipsWindow = new RecoveryTipsWindow(App.CurrentUser);
-                tipsWindow.ShowDialog();
+                tipsWindow.Show();
             }
             else
             {
