@@ -8,6 +8,7 @@
                 <DataTemplate>
                     <Border Background="#F9F9F9" Margin="0,0,0,10" Padding="15" CornerRadius="8" BorderBrush="#DDDDDD" BorderThickness="1">
                         <StackPanel>
+                            <TextBlock Text="Вес регулируйте сами, опираясь на свои ощущения"/>
                             <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold"/>
                             <TextBlock Text="{Binding Description}" FontSize="12" Foreground="Gray" Margin="0,5,0,10"/>
                             <Button Content="Детали" Tag="{Binding}" Click="BtnDetails_Click" HorizontalAlignment="Left" Style="{StaticResource ButtonStyle}"/>

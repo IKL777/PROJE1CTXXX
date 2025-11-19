@@ -159,13 +159,65 @@ namespace Class1
                 Exercises = new List<Exercise>
                 {
                     new Exercise { Name = "Бёрпи", Description = "Кардио + силовая", Sets = 4, Reps = 15, Weight = 0 },
-                    new Exercise { Name = "Планка", Description = "Удержание кора", Sets = 3, Reps = 0, Weight = 0 },
+                    new Exercise { Name = "Планка", Description = "Удержание кора", Sets = 3, Reps = 10, Weight = 0 },
                     new Exercise { Name = "Выпады с гантелями", Description = "Ноги + кардио", Sets = 3, Reps = 12, Weight = 10 }
+                }
+            };
+
+            var TyaniTolkai_den_1 = new WorkoutProgram
+            {
+                Name = "Тяни-толкай для дома день 1",
+                Description = "Тренировка: грудь и трицепс",
+                Exercises = new List<Exercise>
+                {
+                    new Exercise {Name="Отжимания от пола ", Description="Грудь / Трицепс", Sets=3, Reps=12, Weight=0},
+                    new Exercise {Name="Узкие отжимания (АЛМАЗНЫЕ)", Description="Трицепс / Средняя часть грудной мышцы / Передние дельты / локтевой состав", Sets=3, Reps=12, Weight=0},
+                    new Exercise {Name="Обратные отжимания", Description="трицепсы / нижняя часть груди", Sets=3 , Reps=12 , Weight=0 }
+                }
+            };
+
+            var TyaniTolkai_den_2 = new WorkoutProgram
+            {
+                Name = "Тяни-толкай для дома день 2",
+                Description = "Тренировка: ноги",
+                Exercises = new List<Exercise>
+                {
+                    new Exercise {Name="Приседания «пистолетик» (пистолеты) ", Description="Квадрицепс(передняя поверхность бедра) + Ягодичные мышцы(большая ягодичная)", Sets=3, Reps=10, Weight=0},
+                    new Exercise {Name="Выпады назад с весом", Description="Квадрицепс (передняя поверхность бедра — особенно опорной ноги) + Ягодичные мышцы.", Sets=3, Reps=10, Weight=8},
+                    new Exercise {Name="Ягодичный мостик с подъёмом на одну ногу", Description="Большая ягодичная мышца (подходы для 1 ноги)", Sets= 3, Reps=12 , Weight=16}
+                }
+            };
+
+            var TyaniTolkai_den_3 = new WorkoutProgram
+            {
+                Name = "Тяни-толкай для дома день 3",
+                Description = "Тренировка: дельты.",
+                Exercises = new List<Exercise>
+                {
+                    new Exercise {Name="Подъёмы рук в стороны с гантелями", Description="Средние пучки дельтовидной мышцы", Sets=3, Reps=15, Weight=8},
+                    new Exercise {Name="Армейский жим стоя гантелями", Description="Все три пучка дельтовидной мышцы (передний, средний, задний)", Sets=3, Reps=10, Weight=8},
+                    new Exercise {Name = "Отведение рук назад", Description = "Мышцы верхней части спины (малая и большая круглые мышцы, ромбовидные) / Трапеция (нижняя часть).", Sets=3, Reps=15, Weight=8}
+                }
+            };
+
+            var TyaniTolkai_den_4 = new WorkoutProgram
+            {
+                Name = "Тяни-толкай для дома день 4",
+                Description = "Тренировка: спина и бицепс.",
+                Exercises = new List<Exercise>
+                {
+                    new Exercise {Name=" Подтягивания на турнике ", Description="Широчайшие мышцы спины (создают 'крылья').", Sets=3, Reps=10, Weight=0},
+                    new Exercise {Name="Тяга гантелей в наклоне", Description="Широчайшие мышцы спины / Ромбовидные и трапециевидные мышцы.", Sets=3, Reps=10, Weight=8},
+                    new Exercise {Name=" Сгибание рук", Description="Бицепс (двуглавая мышца плеча).", Sets=3, Reps=10,Weight=16}
                 }
             };
 
             Programs.Add(beginnerProgram);
             Programs.Add(cutProgram);
+            Programs.Add(TyaniTolkai_den_1);
+            Programs.Add(TyaniTolkai_den_2);
+            Programs.Add(TyaniTolkai_den_3);
+            Programs.Add(TyaniTolkai_den_4);
         }
     }
 
