@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Class1;
+using System.Globalization;
 
 namespace PROJECT
 {
@@ -22,21 +23,22 @@ namespace PROJECT
                 return;
             }
 
-            if (!int.TryParse(RepsBox.Text, out int reps) || reps <= 0)
+            if (!int.TryParse(RepsBox.Text, out int reps) || reps <= 0 || reps > 150)
             {
-                MessageBox.Show("Повторения должны быть положительным числом.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Повторения должны быть положительным числом.  И в диапазоне от 0 до 150 ", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (!int.TryParse(SetsBox.Text, out int sets) || sets <= 0)
+            if (!int.TryParse(SetsBox.Text, out int sets) || sets <= 0 || sets > 40)
             {
-                MessageBox.Show("Подходы должны быть положительным числом.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Подходы должны быть положительным числом. И в диапазоне от 0 до 40", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (!double.TryParse(WeightBox.Text, out double weight) || weight < 0)
+            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;   // Корректная обработка разделителя для double
+            if (!double.TryParse(WeightBox.Text, out double weight) || weight < 0 || weight > 600)
             {
-                MessageBox.Show("Вес должен быть неотрицательным числом.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Вес должен быть неотрицательным числом.  И в диапазоне от 0 до 600", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
