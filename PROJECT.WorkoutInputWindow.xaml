@@ -18,11 +18,6 @@
             <TextBlock Text="Дата:" VerticalAlignment="Center" Margin="0,0,10,0" Style="{StaticResource TextStyle_TextBlock}"/>
             <DatePicker x:Name="DatePicker" SelectedDate="{x:Static sys:DateTime.Now}" Width="150"/>
 
-            <TextBlock Text="Тип:" VerticalAlignment="Center" Margin="30,0,10,0" Style="{StaticResource TextStyle_TextBlock}"/>
-            <ComboBox x:Name="TypeComboBox" Width="140" >
-                <ComboBoxItem Content="WithWeights" IsSelected="True" />
-                <ComboBoxItem Content="Bodyweight"/>
-            </ComboBox>
         </StackPanel>
 
         <!-- Два списка -->

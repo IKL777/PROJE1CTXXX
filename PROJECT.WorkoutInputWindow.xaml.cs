@@ -157,14 +157,8 @@ namespace PROJECT
             }
 
             SelectedDate = DatePicker.SelectedDate ?? DateTime.Now;
-            var selectedItem = TypeComboBox.SelectedItem as ComboBoxItem;
-            var typeStr = selectedItem?.Content?.ToString() ?? "WithWeights";
-
-            SelectedWorkoutType = typeStr switch
-            {
-                "Bodyweight" => WorkoutType.Bodyweight,
-                _ => WorkoutType.WithWeights
-            };
+            
+            
 
             try
             {
