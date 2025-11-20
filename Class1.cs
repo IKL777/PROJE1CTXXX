@@ -19,14 +19,14 @@ using Newtonsoft.Json;
 
 namespace Class1
 {
-    public enum WorkoutType { WithWeights, Bodyweight }
+   
     public enum Difficulty { Easy, Medium, Hard }
 
     public class Workout
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
-        public Class1.WorkoutType Type { get; set; }
+        public string Type { get; set; }
 
         public List<Exercise> Exercises { get; set; } = new();
         public int UserId { get; set; }

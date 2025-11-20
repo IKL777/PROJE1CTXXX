@@ -15,7 +15,6 @@ namespace PROJECT
     public partial class WorkoutInputWindow1 : Window
     {
         public DateTime SelectedDate { get; private set; }
-        public WorkoutType SelectedWorkoutType { get; private set; }
         public ObservableCollection<Exercise> Exercises { get; private set; } = new();
         public ObservableCollection<Exercise> AvailableExercises { get; } = new();
         public ObservableCollection<Exercise> SelectedExercises { get; } = new();
@@ -26,8 +25,9 @@ namespace PROJECT
             DataContext = this;
             LoadAvailableExercises();
             DatePicker.SelectedDate = DateTime.Now;
+            
         }
-
+        
         private async void LoadAvailableExercises()
         {
             try
@@ -157,8 +157,19 @@ namespace PROJECT
             }
 
             SelectedDate = DatePicker.SelectedDate ?? DateTime.Now;
-            
-            
+
+
+            // получаем тип тренировки правильно
+            string workoutType = "Силовая тренировка";
+            if (WorkoutTypeComboBox.SelectedItem is ComboBoxItem selectedItem)
+            {
+                workoutType = selectedItem.Content.ToString();
+            }
+            else if (WorkoutTypeComboBox.SelectedItem != null)
+            {
+                workoutType = WorkoutTypeComboBox.SelectedItem.ToString();
+            }
+
 
             try
             {
@@ -167,10 +178,11 @@ namespace PROJECT
                 var newWorkout = new Workout
                 {
                     Date = SelectedDate,
-                    Type = SelectedWorkoutType,
+                    Type = ((ComboBoxItem)WorkoutTypeComboBox.SelectedItem).Content.ToString(),
                     UserId=App.CurrentUser.Id,
                     Exercises = new List<Exercise>()
                 };
+
 
                 context.Workouts.Add(newWorkout);
                 await context.SaveChangesAsync();

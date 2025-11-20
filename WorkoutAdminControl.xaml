@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PROJECT"
         mc:Ignorable="d"
-        Title="Админ панель" Height="450" Width="800" >
+        Title="Панель для создания карточек" Height="450" Width="800" >
     <!--Чтобы не добавлять по отдельности -->
     <Window.Resources>
         <Style TargetType="TextBlock">
