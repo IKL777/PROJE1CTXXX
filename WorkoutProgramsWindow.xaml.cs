@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static PR.GotovieKompleksi;
 
 namespace PROJECT
 {
@@ -21,12 +22,6 @@ namespace PROJECT
     /// </summary>
     public partial class WorkoutProgramsWindow : Window
     {
-        public class ProgramItem
-        {
-            public string Name { get; set; }
-            public string Description { get; set; }
-            public List<Exercise> Exercises { get; set; } = new List<Exercise>();
-        }
 
         public WorkoutProgramsWindow()
         {
@@ -35,19 +30,12 @@ namespace PROJECT
         }
         private void LoadPrograms()
         {
-            var programs = ProgramRepository.Programs.Select(p => new GotovieKompleksi.ProgramItem
-            {
-                Name = p.Name,
-                Description = p.Description,
-                Exercises = p.Exercises
-            }).ToList();
-
-            ProgramsList.ItemsSource = programs;
+            ProgramsList.ItemsSource = ProgramRepository.Programs;
         }
 
         private void BtnDetails_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is GotovieKompleksi.ProgramItem program)
+            if (sender is Button button && button.Tag is WorkoutProgram program)
             {
                 var detailsWindow = new GotovieKompleksi(program);
                 detailsWindow.ShowDialog();

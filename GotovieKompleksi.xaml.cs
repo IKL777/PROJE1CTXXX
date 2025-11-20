@@ -26,7 +26,7 @@ namespace PR
             public string Description { get; set; }
             public List<Exercise> Exercises { get; set; } = new List<Exercise>();
         }
-        public GotovieKompleksi(ProgramItem program)
+        public GotovieKompleksi(WorkoutProgram program)
         {
             InitializeComponent();
             this.DataContext = program;
